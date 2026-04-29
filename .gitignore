@@ -50,6 +50,3 @@ build/
 .DS_Store
 Thumbs.db
 compile_commands.json
-
-# Docs (opcional)
-documentacion/

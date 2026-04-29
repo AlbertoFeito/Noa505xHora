@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Técnica - Sistema 505 X HORA</title>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+        }
+        h1 {
+            color: #1a5276;
+            border-bottom: 4px solid #2980b9;
+            padding-bottom: 15px;
+            font-size: 2.2em;
+            margin-top: 0;
+        }
+        h2 {
+            color: #1a5276;
+            margin-top: 35px;
+            font-size: 1.6em;
+            border-left: 5px solid #2980b9;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #2874a6;
+            margin-top: 25px;
+            font-size: 1.3em;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            color: #5d6d7e;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #2980b9;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background-color: #f8f9f9; }
+        tr:hover { background-color: #ebf5fb; }
+        .highlight-box {
+            background: #ebf5fb;
+            border-left: 5px solid #2980b9;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-box {
+            background: #fef9e7;
+            border-left: 5px solid #f1c40f;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #eafaf1;
+            border-left: 5px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        code {
+            background: #f4f6f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #c0392b;
+            font-size: 0.9em;
+        }
+        ul, ol { padding-left: 25px; }
+        li { margin-bottom: 8px; }
+        .phase {
+            background: #f8f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #d5dbdb;
+        }
+        .phase-title {
+            font-weight: bold;
+            color: #1a5276;
+            margin-bottom: 8px;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Propuesta Técnica: Sistema de Gestión Desktop</h1>
+    <div class="subtitle">Microempresa 505 X HORA — Arquitectura Offline-First para Operaciones Comerciales</div>
+
+    <div class="highlight-box">
+        <strong>Resumen Ejecutivo:</strong> Sistema desktop offline-first diseñado específicamente para el contexto operativo, legal y tecnológico de una microempresa en Cuba (TCP, ONAT, conectividad limitada). Prioriza la trazabilidad del flujo de ventas, el cuadre final diario y la legalización contable.
+    </div>
+
+    <h2>1. Stack Tecnológico Recomendado</h2>
+    <table>
+        <tr>
+            <th>Capa</th>
+            <th>Tecnología</th>
+            <th>Justificación</th>
+        </tr>
+        <tr>
+            <td><strong>Frontend/UI</strong></td>
+            <td>Tauri (Rust) + React <em>o</em> Electron + React</td>
+            <td>Interfaz moderna y profesional. Tauri consume mínima RAM (crítico en equipos modestos).</td>
+        </tr>
+        <tr>
+            <td><strong>Base de Datos</strong></td>
+            <td>SQLite local</td>
+            <td>Funciona 100% offline. No requiere servidor. Respaldo copiando un solo archivo.</td>
+        </tr>
+        <tr>
+            <td><strong>Reportes/Impresión</strong></td>
+            <td>PDF nativo + impresora térmica/matricial</td>
+            <td>Para facturas, vales de venta/entrega y reportes ONAT.</td>
+        </tr>
+        <tr>
+            <td><strong>Seguridad</strong></td>
+            <td>Usuarios locales con roles (RBAC)</td>
+            <td>Cada perfil visualiza únicamente sus funciones autorizadas.</td>
+        </tr>
+    </table>
+
+    <div class="warning-box">
+        <strong>Alternativa conservadora:</strong> Si los equipos son muy limitados (Windows 7/8, 2-4GB RAM), utilizar <strong>C# WinForms</strong> o <strong>WPF</strong> con <strong>SQLite</strong>. Es visualmente más tradicional pero infinitamente más rápido en hardware bajo.
+    </div>
+
+    <h2>2. Arquitectura por Módulos (Roles)</h2>
+    <p>La aplicación es <strong>monolítica modular</strong>. Al iniciar sesión, el sistema carga exclusivamente las funciones del rol asignado:</p>
+
+    <h3>2.1 Módulo Comercial (Oficina)</h3>
+    <ul>
+        <li><strong>Vale de Venta:</strong> Generación con número correlativo, datos del cliente, productos y condiciones.</li>
+        <li><strong>Facturación:</strong> Emisión del documento legal en formato para impresora.</li>
+        <li><strong>Liquidación Rápida:</strong> Registro inmediato del efectivo/transferencia entregado por el mensajero.</li>
+        <li><strong>Cuadre Parcial:</strong> Vista en tiempo real de ventas del día vs. fondos recibidos.</li>
+    </ul>
+
+    <h3>2.2 Módulo Almacén (Ayudante)</h3>
+    <ul>
+        <li><strong>Vale de Entrada:</strong> Recepción digital del vale desde el módulo comercial.</li>
+        <li><strong>Checklist de Calidad:</strong>
+            <ul>
+                <li>Verificación de envoltura y embalaje</li>
+                <li>Funcionamiento de equipos</li>
+                <li>Fecha de caducidad de perecederos</li>
+            </ul>
+        </li>
+        <li><strong>Conteo Físico Diario:</strong> Interfaz optimizada para conteo de existencias al cierre.</li>
+        <li><strong>Alertas de Stock:</strong> Notificación de productos bajo nivel mínimo.</li>
+    </ul>
+
+    <h3>2.3 Módulo Mensajero (Tablet/App ligera)</h3>
+    <ul>
+        <li><strong>Conciliación Previa:</strong> Registro del acuerdo de pago y plazo antes de la salida.</li>
+        <li><strong>Estado de Entrega:</strong> "En tránsito", "Entregado", "Incidente".</li>
+        <li><strong>Cobro:</strong> Tipo (efectivo/transferencia), monto, foto del comprobante.</li>
+        <li><strong>Notificación de Incidentes:</strong> Registro textual de problemas con el cliente.</li>
+    </ul>
+    <p><em>Nota: Si no hay presupuesto para desarrollo móvil, el mensajero utiliza una tablet con la misma aplicación desktop en modo "Mensajero".</em></p>
+
+    <h3>2.4 Módulo Custodio</h3>
+    <ul>
+        <li><strong>Recibo de Custodia:</strong> Pantalla simplificada: "Recibo X pesos, Y productos". Confirmación mediante PIN.</li>
+        <li><strong>Historial de Custodia:</strong> Trazabilidad completa de entregas con fecha, hora y responsables.</li>
+    </ul>
+
+    <h3>2.5 Módulo Administrador / Propietario</h3>
+    <ul>
+        <li><strong>Dashboard:</strong> Ventas del día, semana y mes con comparativas visuales.</li>
+        <li><strong>Gestión de Gastos:</strong> Alquiler, ONAT, combustible, mantenimiento, salarios.</li>
+        <li><strong>Nómina Quincenal:</strong>
+            <ul>
+                <li>Salario base configurable por trabajador</li>
+                <li>Comisiones automáticas por volumen de ventas</li>
+                <li>Condicionado al comportamiento de ventas (política empresarial)</li>
+            </ul>
+        </li>
+        <li><strong>Configuración General:</strong>
+            <ul>
+                <li>Horarios: Atención al cliente (09:00-16:00), Personal (08:30-17:00)</li>
+                <li>Mantenimiento de transporte: Alertas los sábados</li>
+                <li>Eliminación del rubro alimentación (según política de optimización de costos)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>3. Flujo de Datos Implementado</h2>
+    <div class="success-box">
+        <pre style="margin:0; font-family: 'Courier New', monospace; line-height: 1.8;">
+[Cliente llega]
+    ↓
+[Comercial] → Genera Vale de Venta + Factura
+    ↓
+[Almacén] ← Recibe Vale de Entrega digital
+    ↓
+[Checklist físico] → Marca verificaciones → Entrega a Mensajero
+    ↓
+[Mensajero] ← Concilia pago/plazo → Traslado → Cobro → Regresa
+    ↓
+[Comercial] ← Liquidación inmediata de fondos
+    ↓
+[Almacén] ← Conteo físico del día
+    ↓
+[Custodio] ← Cuadre final (ventas vs. existencias vs. efectivo)
+    ↓
+[Administrador] ← Revisa gastos, nómina, reportes ONAT
+        </pre>
+    </div>
+
+    <h2>4. Plan de Implementación MVP</h2>
+    <p>Para no demorar la puesta en marcha, se propone el siguiente orden de prioridad:</p>
+
+    <div class="phase">
+        <div class="phase-title">Fase 1 (Semanas 1-4): Operación Básica</div>
+        <ol>
+            <li>Catálogo de productos (nombre, categoría, precio, stock).</li>
+            <li>Usuarios y roles (Comercial, Almacén, Admin).</li>
+            <li>Vale de Venta + Factura (impresión).</li>
+            <li>Liquidación del mensajero (registro de cobros).</li>
+            <li>Cuadre final del día (cierre de caja).</li>
+        </ol>
+    </div>
+
+    <div class="phase">
+        <div class="phase-title">Fase 2 (Semanas 5-8): Control y Legalidad</div>
+        <ol>
+            <li>Conteo físico de almacén con ajustes de inventario.</li>
+            <li>Módulo de gastos operativos (ONAT, alquiler, combustible).</li>
+            <li>Reportes para ONAT (ingresos y gastos declarables).</li>
+            <li>Custodia y traspaso nocturno.</li>
+        </ol>
+    </div>
+
+    <div class="phase">
+        <div class="phase-title">Fase 3 (Semanas 9-12): Optimización</div>
+        <ol>
+            <li>Nómina quincenal automática con comisiones.</li>
+            <li>Alertas de mantenimiento (sábados).</li>
+            <li>Métricas de disciplina de venta (checklist de apariencia/vocabulario).</li>
+            <li>Respaldo automático de la base de datos (USB o carpeta local).</li>
+        </ol>
+    </div>
+
+    <h2>5. Consideraciones Específicas para el Contexto Cubano</h2>
+    <table>
+        <tr>
+            <th>Reto</th>
+            <th>Solución en el Sistema</th>
+        </tr>
+        <tr>
+            <td><strong>Internet intermitente</strong></td>
+            <td>Todo funciona offline. Respaldo en la nube es opcional y no requerido.</td>
+        </tr>
+        <tr>
+            <td><strong>ONAT / TCP</strong></td>
+            <td>Reporte pre-formateado de ingresos y gastos mensuales, listo para declaración.</td>
+        </tr>
+        <tr>
+            <td><strong>Equipos limitados</strong></td>
+            <td>SQLite no consume recursos. Interfaz ligera sin efectos pesados.</td>
+        </tr>
+        <tr>
+            <td><strong>Impresoras</strong></td>
+            <td>Soporte para impresoras térmicas baratas (58mm/80mm) para vales y facturas.</td>
+        </tr>
+        <tr>
+            <td><strong>Legalización futura</strong></td>
+            <td>El sistema ya estructura roles, flujos y finanzas como exige una entidad formal.</td>
+        </tr>
+    </table>
+
+    <h2>6. Protocolo de Cuadre Final y Seguridad</h2>
+    <p>Pantalla obligatoria antes de las 17:00:</p>
+    <ol>
+        <li><strong>Cuadre de Caja:</strong> El sistema calcula automáticamente: <code>Ventas facturadas - Gastos del día = Efectivo esperado</code>.</li>
+        <li><strong>Conciliación:</strong> El comercial ingresa el efectivo físico contado.</li>
+        <li><strong>Diferencia:</strong> Si existe faltante o sobrante, el sistema exige justificación obligatoria antes de continuar.</li>
+        <li><strong>Custodia:</strong> Solo cuando el cuadre coincide (o se justifica la diferencia), se genera el acta de entrega al custodio con fecha, hora y confirmación PIN de ambas partes.</li>
+    </ol>
+
+    <h2>7. Recomendación Concreta</h2>
+    <div class="highlight-box">
+        <p><strong>Empieza con Tauri + React + SQLite</strong> si cuentas con alguien con conocimientos web, o <strong>C# + SQLite</strong> si tienes un desarrollador de Windows tradicional.</p>
+        <p><strong>Primer entregable crítico:</strong> Un sistema donde el comercial cree un vale de venta, el almacén marque que revisó el producto, el mensajero registre el cobro al volver, y el admin vea si cuadra la caja al final del día.</p>
+        <p>Esto resuelve el <strong>80% del dolor operativo inmediato</strong>. Todo lo demás (nómina, ONAT, mantenimiento) se construye sobre esa base sólida.</p>
+    </div>
+
+    <h2>8. Escalabilidad Futura</h2>
+    <ul>
+        <li><strong>Ahora:</strong> App desktop local con SQLite.</li>
+        <li><strong>Después:</strong> Migrar la base de datos a un servidor local (Raspberry Pi o PC vieja) para acceso multi-puesto por red local.</li>
+        <li><strong>Futuro:</strong> Sincronización con API ligera si se requiere conectar con proveedores o socios estratégicos.</li>
+    </ul>
+
+    <div class="footer">
+        <p>Documento generado para 505 X HORA | Sistema de Gestión Desktop</p>
+        <p>Propuesta técnica orientada a la legalización y optimización operativa</p>
+    </div>
+</body>
+</html>
