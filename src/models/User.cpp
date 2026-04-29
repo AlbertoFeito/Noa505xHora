@@ -46,12 +46,21 @@ QHash<int, QByteArray> UserManager::roleNames() const
 
 bool UserManager::login(const QString &username, const QString &password)
 {
+    // Primero buscar usuario por username y password
     QSqlQuery query = m_dbManager->executeQuery(
-        "SELECT * FROM users WHERE username = :username AND password_hash = :password AND is_active = 1",
+        "SELECT * FROM users WHERE username = :username AND password_hash = :password",
         {{"username", username}, {"password", password}}
     );
 
     if (query.next()) {
+        // Usuario existe, verificar si está activo
+        bool isActive = query.value("is_active").toBool();
+        if (!isActive) {
+            emit loginFailed("Usuario desactivado. Contacte a su administrador");
+            return false;
+        }
+
+        // Usuario activo, hacer login
         m_currentUser = userFromQuery(query);
         emit currentUserChanged();
         emit isLoggedInChanged();
@@ -74,6 +83,17 @@ bool UserManager::addUser(const QString &username, const QString &password,
                            const QString &fullName, const QString &role,
                            const QString &phone)
 {
+    // Verificar si el username ya existe
+    QSqlQuery checkQuery = m_dbManager->executeQuery(
+        "SELECT id FROM users WHERE username = :username",
+        {{"username", username}}
+    );
+
+    if (checkQuery.next()) {
+        qWarning() << "Username already exists:" << username;
+        return false;
+    }
+
     QSqlQuery query = m_dbManager->executeQuery(
         "INSERT INTO users (username, password_hash, full_name, role, phone) "
         "VALUES (:username, :password, :full_name, :role, :phone)",
@@ -133,19 +153,28 @@ bool UserManager::updateUser(int id, const QVariantMap &fields)
 
 bool UserManager::deactivateUser(int id)
 {
+    qDebug() << "deactivateUser called with id:" << id;
     return updateUser(id, {{"isActive", false}});
 }
 
 bool UserManager::deleteUser(int id)
 {
-    QString sql = "DELETE FROM users WHERE id = ?";
+    QString sql = "DELETE FROM users WHERE id = :id";
     QSqlQuery query = m_dbManager->executeQuery(sql, {{"id", id}});
 
-    if (!query.isValid()) {
-        qWarning() << "Failed to delete user:" << query.lastError();
+    // Verificar que la query se ejecutó correctamente
+    if (!query.isActive() || query.lastError().isValid()) {
+        qWarning() << "Failed to delete user:" << query.lastError().text();
         return false;
     }
 
+    // Verificar que se eliminó al menos una fila
+    if (query.numRowsAffected() == 0) {
+        qWarning() << "No user found to delete with id:" << id;
+        return false;
+    }
+
+    qDebug() << "User deleted successfully, rows affected:" << query.numRowsAffected();
     refreshUsers();
     return true;
 }
@@ -229,8 +258,9 @@ bool UserManager::hasPermission(const QString &permission) const
 
 void UserManager::loadUsers()
 {
+    // Cargar TODOS los usuarios (activos e inactivos)
     QSqlQuery query = m_dbManager->executeQuery(
-        "SELECT id, username, full_name, role, phone, email, is_active, created_at FROM users WHERE is_active = 1 ORDER BY full_name"
+        "SELECT id, username, full_name, role, phone, email, is_active, created_at FROM users ORDER BY full_name"
     );
 
     while (query.next()) {

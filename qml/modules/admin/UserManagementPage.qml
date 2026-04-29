@@ -10,7 +10,7 @@ Page {
 
     // Estado
     property string filterRole: "todos"
-    property bool showInactive: false
+    property string filterStatus: "todos"  // "todos", "activos", "inactivos"
     property var editingUser: null
 
     header: NavigationBar {
@@ -26,7 +26,7 @@ Page {
 
     // Refrescar lista
     function refreshList() {
-        userListView.model = UserManager.getAllUsers()
+        userListView.model = getFilteredUsers()
     }
 
     // Filtrar usuarios
@@ -43,7 +43,10 @@ Page {
             }
 
             // Filtro por estado
-            if (!showInactive && !user.isActive) {
+            if (filterStatus === "activos" && !user.isActive) {
+                continue
+            }
+            if (filterStatus === "inactivos" && user.isActive) {
                 continue
             }
 
@@ -97,15 +100,15 @@ Page {
                     ComboBox {
                         id: statusFilter
                         Layout.fillWidth: true
+                        currentIndex: 0  // Por defecto mostrar todos
                         model: ["Todos", "Solo activos", "Solo inactivos"]
                         onCurrentIndexChanged: {
                             if (currentIndex === 0) {
-                                showInactive = true
+                                filterStatus = "todos"
                             } else if (currentIndex === 1) {
-                                showInactive = false
+                                filterStatus = "activos"
                             } else {
-                                showInactive = true
-                                // TODO: filtrar solo inactivos
+                                filterStatus = "inactivos"
                             }
                             refreshList()
                         }
@@ -113,12 +116,6 @@ Page {
                 }
 
                 Item { Layout.fillWidth: true }
-
-                CustomButton {
-                    text: "🔄 Actualizar"
-                    type: 1
-                    onClicked: refreshList()
-                }
             }
         }
 
@@ -380,7 +377,7 @@ Page {
             }
 
             Label {
-                text: userToDelete ? (userToDelete.fullName || userToDelete.username) : ""
+                text: confirmDeleteDialog.userToDelete ? (confirmDeleteDialog.userToDelete.fullName || confirmDeleteDialog.userToDelete.username) : ""
                 font.weight: Font.Bold
                 color: Theme.error
             }
@@ -462,20 +459,36 @@ Page {
             userDialog.close()
             page.editingUser = null
             refreshList()
+        } else {
+            // Mostrar error si falla
+            appWindow.showToast("Error: El usuario ya existe o datos inválidos", true)
         }
     }
 
     function toggleUser(userId, isActive) {
+        // Prevenir que admin se desactive a sí mismo
+        var currentUser = UserManager.currentUser
+        if (userId === currentUser.id && isActive) {
+            appWindow.showToast("No puedes desactivarte a ti mismo", true)
+            return
+        }
+
         if (isActive) {
             // Desactivar
             UserManager.deactivateUser(userId)
+            appWindow.showToast("Usuario desactivado")
         } else {
             // Reactivar
             var fields = {"isActive": true}
             UserManager.updateUser(userId, fields)
+            appWindow.showToast("Usuario activado")
         }
         refreshList()
     }
 
-    Component.onCompleted: refreshList()
+    Component.onCompleted: {
+        filterStatus = "todos"
+        filterRole = "todos"
+        refreshList()
+    }
 }

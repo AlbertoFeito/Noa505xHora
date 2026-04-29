@@ -50,3 +50,6 @@ build/
 .DS_Store
 Thumbs.db
 compile_commands.json
+
+# Database (keep in separate folder, not in git)
+data/
