@@ -136,6 +136,20 @@ bool UserManager::deactivateUser(int id)
     return updateUser(id, {{"isActive", false}});
 }
 
+bool UserManager::deleteUser(int id)
+{
+    QString sql = "DELETE FROM users WHERE id = ?";
+    QSqlQuery query = m_dbManager->executeQuery(sql, {{"id", id}});
+
+    if (!query.isValid()) {
+        qWarning() << "Failed to delete user:" << query.lastError();
+        return false;
+    }
+
+    refreshUsers();
+    return true;
+}
+
 QVariantMap UserManager::getUser(int id) const
 {
     for (const UserData &user : m_users) {

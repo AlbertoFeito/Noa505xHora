@@ -14,10 +14,26 @@ DatabaseManager::~DatabaseManager()
     }
 }
 
-bool DatabaseManager::initialize() 
+bool DatabaseManager::initialize()
 {
-    QString dbPath = QDir(QCoreApplication::applicationDirPath()).filePath("505xhora.db");
-    
+    // Usar carpeta data junto al proyecto, no en build
+    QString projectDir = QCoreApplication::applicationDirPath();
+
+    // Si estamos en build/, subir al nivel del proyecto
+    if (projectDir.contains("build")) {
+        projectDir = "D:/2026/505XHORA/data";
+    } else {
+        projectDir = QCoreApplication::applicationDirPath() + "/data";
+    }
+
+    // Crear directorio si no existe
+    QDir dir;
+    if (!dir.exists(projectDir)) {
+        dir.mkpath(projectDir);
+    }
+
+    QString dbPath = QDir(projectDir).filePath("505xhora.db");
+
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(dbPath);
     

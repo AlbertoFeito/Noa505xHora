@@ -68,6 +68,7 @@ public:
                              const QString &phone = QString());
     Q_INVOKABLE bool updateUser(int id, const QVariantMap &fields);
     Q_INVOKABLE bool deactivateUser(int id);
+    Q_INVOKABLE bool deleteUser(int id);
     Q_INVOKABLE QVariantMap getUser(int id) const;
     Q_INVOKABLE QVariantList getUsersByRole(const QString &role) const;
     Q_INVOKABLE QVariantList getAllUsers() const;

@@ -24,6 +24,34 @@ Page {
         ]
     }
 
+    // Refrescar lista
+    function refreshList() {
+        userListView.model = UserManager.getAllUsers()
+    }
+
+    // Filtrar usuarios
+    function getFilteredUsers() {
+        var allUsers = UserManager.getAllUsers()
+        var filtered = []
+
+        for (var i = 0; i < allUsers.length; i++) {
+            var user = allUsers[i]
+
+            // Filtro por rol
+            if (filterRole !== "todos" && user.role !== filterRole) {
+                continue
+            }
+
+            // Filtro por estado
+            if (!showInactive && !user.isActive) {
+                continue
+            }
+
+            filtered.push(user)
+        }
+        return filtered
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Theme.spacingMd
@@ -37,25 +65,59 @@ Page {
             content: RowLayout {
                 spacing: Theme.spacingMd
 
-                ComboBox {
-                    id: roleFilter
+                ColumnLayout {
                     Layout.preferredWidth: 150
-                    model: ["todos", "administrador", "comercial", "almacen", "mensajero", "custodio"]
-                    onCurrentTextChanged: filterRole = currentText
+
+                    Label {
+                        text: "Rol"
+                        font.pixelSize: 11
+                        color: Theme.textSecondary
+                    }
+
+                    ComboBox {
+                        id: roleFilter
+                        Layout.fillWidth: true
+                        model: ["todos", "administrador", "comercial", "almacen", "mensajero", "custodio"]
+                        onCurrentTextChanged: {
+                            filterRole = currentText
+                            refreshList()
+                        }
+                    }
                 }
 
-                CheckBox {
-                    id: inactiveCheck
-                    text: "Mostrar inactivos"
-                    onCheckedChanged: showInactive = checked
+                ColumnLayout {
+                    Layout.preferredWidth: 150
+
+                    Label {
+                        text: "Estado"
+                        font.pixelSize: 11
+                        color: Theme.textSecondary
+                    }
+
+                    ComboBox {
+                        id: statusFilter
+                        Layout.fillWidth: true
+                        model: ["Todos", "Solo activos", "Solo inactivos"]
+                        onCurrentIndexChanged: {
+                            if (currentIndex === 0) {
+                                showInactive = true
+                            } else if (currentIndex === 1) {
+                                showInactive = false
+                            } else {
+                                showInactive = true
+                                // TODO: filtrar solo inactivos
+                            }
+                            refreshList()
+                        }
+                    }
                 }
 
                 Item { Layout.fillWidth: true }
 
                 CustomButton {
-                    text: "Actualizar"
+                    text: "🔄 Actualizar"
                     type: 1
-                    onClicked: userListView.forceLayout()
+                    onClicked: refreshList()
                 }
             }
         }
@@ -64,13 +126,13 @@ Page {
         CustomCard {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            title: "Usuarios (" + UserManager.rowCount() + ")"
+            title: "Usuarios (" + getFilteredUsers().length + ")"
 
             content: ListView {
                 id: userListView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                model: UserManager.getAllUsers()
+                model: getFilteredUsers()
                 clip: true
 
                 delegate: ItemDelegate {
@@ -78,23 +140,30 @@ Page {
                     onClicked: showUserDialog(modelData)
 
                     contentItem: ColumnLayout {
-                        spacing: 4
+                        spacing: 6
 
                         RowLayout {
                             Layout.fillWidth: true
 
                             ColumnLayout {
                                 Layout.fillWidth: true
+                                spacing: 2
 
-                                Label {
-                                    text: modelData.fullName || modelData.username
-                                    font.pixelSize: 15
-                                    font.weight: Font.Medium
-                                    color: Theme.textPrimary
+                                RowLayout {
+                                    Label {
+                                        text: modelData.fullName || modelData.username
+                                        font.pixelSize: 15
+                                        font.weight: Font.Medium
+                                        color: Theme.textPrimary
+                                    }
+                                    Label {
+                                        text: modelData.isActive ? "🟢" : "🔴"
+                                        font.pixelSize: 12
+                                    }
                                 }
 
                                 Label {
-                                    text: modelData.username + " | " + modelData.role
+                                    text: "@" + modelData.username + " | " + modelData.role
                                     font.pixelSize: 12
                                     color: Theme.textSecondary
                                 }
@@ -103,19 +172,17 @@ Page {
                                     text: (modelData.phone || "") + " | " + (modelData.email || "")
                                     font.pixelSize: 11
                                     color: Theme.textDisabled
+                                    visible: modelData.phone || modelData.email
                                 }
                             }
 
                             ColumnLayout {
-                                Label {
-                                    text: modelData.isActive ? "🟢 Activo" : "🔴 Inactivo"
-                                    font.pixelSize: 12
-                                    color: modelData.isActive ? Theme.success : Theme.error
-                                }
+                                spacing: 6
 
+                                // Botones de acción
                                 RowLayout {
                                     CustomButton {
-                                        text: "✏️"
+                                        text: "✏️ Editar"
                                         type: 0
                                         onClicked: {
                                             page.editingUser = modelData
@@ -124,9 +191,15 @@ Page {
                                     }
 
                                     CustomButton {
-                                        text: modelData.isActive ? "🛇" : "✅"
+                                        text: modelData.isActive ? "🛇 Desactivar" : "✅ Activar"
                                         type: modelData.isActive ? 3 : 1
                                         onClicked: toggleUser(modelData.id, modelData.isActive)
+                                    }
+
+                                    CustomButton {
+                                        text: "🗑️ Eliminar"
+                                        type: 3
+                                        onClicked: confirmDelete(modelData)
                                     }
                                 }
                             }
@@ -147,7 +220,10 @@ Page {
     Dialog {
         id: userDialog
         title: page.editingUser ? "Editar Usuario" : "Nuevo Usuario"
-        width: 400
+        width: 420
+        height: 520
+        modal: true
+        anchors.centerIn: parent
 
         onOpened: {
             if (page.editingUser) {
@@ -156,7 +232,7 @@ Page {
                 fullNameField.text = page.editingUser.fullName
                 phoneField.text = page.editingUser.phone || ""
                 emailField.text = page.editingUser.email || ""
-                roleCombo.currentIndex = roleCombo.model.indexOf(page.editingUser.role)
+                roleCombo.currentIndex = Math.max(0, roleCombo.model.indexOf(page.editingUser.role))
             } else {
                 usernameField.text = ""
                 passwordField.text = ""
@@ -170,45 +246,101 @@ Page {
         ColumnLayout {
             spacing: Theme.spacingMd
 
-            CustomTextField {
-                id: usernameField
-                label: "Usuario"
-                placeholder: "Nombre de usuario"
-                required: true
+            // Usuario
+            ColumnLayout {
+                Label {
+                    text: "Usuario *"
+                    font.pixelSize: 11
+                    color: Theme.textSecondary
+                }
+                CustomTextField {
+                    id: usernameField
+                    Layout.fillWidth: true
+                    label: ""
+                    placeholder: "Nombre de usuario"
+                }
             }
 
-            CustomTextField {
-                id: passwordField
-                label: "Contraseña"
-                placeholder: page.editingUser ? "Dejar vacío para mantener" : "Contraseña"
-                showTogglePassword: true
+            // Contraseña
+            ColumnLayout {
+                Label {
+                    text: page.editingUser ? "Contraseña (dejar vacío para mantener)" : "Contraseña *"
+                    font.pixelSize: 11
+                    color: Theme.textSecondary
+                }
+                CustomTextField {
+                    id: passwordField
+                    Layout.fillWidth: true
+                    label: ""
+                    placeholder: "Contraseña"
+                    showTogglePassword: true
+                }
             }
 
-            CustomTextField {
-                id: fullNameField
-                label: "Nombre Completo"
-                placeholder: "Nombre completo"
-                required: true
+            // Nombre completo
+            ColumnLayout {
+                Label {
+                    text: "Nombre Completo *"
+                    font.pixelSize: 11
+                    color: Theme.textSecondary
+                }
+                CustomTextField {
+                    id: fullNameField
+                    Layout.fillWidth: true
+                    label: ""
+                    placeholder: "Nombre completo"
+                }
             }
 
-            CustomTextField {
-                id: phoneField
-                label: "Teléfono"
-                placeholder: "Teléfono"
+            // Teléfono y Email
+            RowLayout {
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Label {
+                        text: "Teléfono"
+                        font.pixelSize: 11
+                        color: Theme.textSecondary
+                    }
+                    CustomTextField {
+                        id: phoneField
+                        Layout.fillWidth: true
+                        label: ""
+                        placeholder: "Teléfono"
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Label {
+                        text: "Email"
+                        font.pixelSize: 11
+                        color: Theme.textSecondary
+                    }
+                    CustomTextField {
+                        id: emailField
+                        Layout.fillWidth: true
+                        label: ""
+                        placeholder: "Email"
+                    }
+                }
             }
 
-            CustomTextField {
-                id: emailField
-                label: "Email"
-                placeholder: "Email"
+            // Rol
+            ColumnLayout {
+                Label {
+                    text: "Rol"
+                    font.pixelSize: 11
+                    color: Theme.textSecondary
+                }
+                ComboBox {
+                    id: roleCombo
+                    Layout.fillWidth: true
+                    model: UserManager.availableRoles()
+                    Layout.preferredWidth: 200
+                }
             }
 
-            ComboBox {
-                id: roleCombo
-                model: UserManager.availableRoles()
-                currentIndex: 1
-            }
-
+            // Botones
             RowLayout {
                 Layout.alignment: Qt.AlignRight
                 spacing: Theme.spacingMd
@@ -220,9 +352,64 @@ Page {
                 }
 
                 CustomButton {
-                    text: page.editingUser ? "Guardar" : "Crear"
+                    text: page.editingUser ? "💾 Guardar" : "➕ Crear"
                     type: 2
                     onClicked: saveUser()
+                }
+            }
+        }
+    }
+
+    // Dialog de confirmación eliminar
+    Dialog {
+        id: confirmDeleteDialog
+        title: "Confirmar Eliminación"
+        width: 350
+        anchors.centerIn: parent
+        modal: true
+
+        property var userToDelete: null
+
+        ColumnLayout {
+            spacing: Theme.spacingMd
+
+            Label {
+                text: "¿Está seguro de eliminar al usuario?"
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+
+            Label {
+                text: userToDelete ? (userToDelete.fullName || userToDelete.username) : ""
+                font.weight: Font.Bold
+                color: Theme.error
+            }
+
+            Label {
+                text: "Esta acción no se puede deshacer."
+                color: Theme.textSecondary
+                font.pixelSize: 12
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignRight
+
+                CustomButton {
+                    text: "Cancelar"
+                    type: 0
+                    onClicked: confirmDeleteDialog.close()
+                }
+
+                CustomButton {
+                    text: "🗑️ Eliminar"
+                    type: 3
+                    onClicked: {
+                        if (confirmDeleteDialog.userToDelete) {
+                            UserManager.deleteUser(confirmDeleteDialog.userToDelete.id)
+                            refreshList()
+                        }
+                        confirmDeleteDialog.close()
+                    }
                 }
             }
         }
@@ -233,6 +420,11 @@ Page {
         userDialog.open()
     }
 
+    function confirmDelete(user) {
+        confirmDeleteDialog.userToDelete = user
+        confirmDeleteDialog.open()
+    }
+
     function saveUser() {
         if (!usernameField.text || !fullNameField.text) {
             return
@@ -240,6 +432,7 @@ Page {
 
         var success
         if (page.editingUser) {
+            // Editar
             var fields = {
                 "username": usernameField.text,
                 "fullName": fullNameField.text,
@@ -252,9 +445,13 @@ Page {
             }
             success = UserManager.updateUser(page.editingUser.id, fields)
         } else {
+            // Crear
+            if (!passwordField.text) {
+                passwordField.text = "123456" // Default
+            }
             success = UserManager.addUser(
                 usernameField.text,
-                passwordField.text || "123456",
+                passwordField.text,
                 fullNameField.text,
                 roleCombo.currentText,
                 phoneField.text
@@ -264,17 +461,21 @@ Page {
         if (success) {
             userDialog.close()
             page.editingUser = null
-            userListView.forceLayout()
+            refreshList()
         }
     }
 
     function toggleUser(userId, isActive) {
         if (isActive) {
+            // Desactivar
             UserManager.deactivateUser(userId)
         } else {
+            // Reactivar
             var fields = {"isActive": true}
             UserManager.updateUser(userId, fields)
         }
-        userListView.forceLayout()
+        refreshList()
     }
+
+    Component.onCompleted: refreshList()
 }
