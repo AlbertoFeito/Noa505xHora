@@ -1,0 +1,35 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>main.qml</file>
+        <file>Theme.qml</file>
+        <file>common/CustomButton.qml</file>
+        <file>common/CustomCard.qml</file>
+        <file>common/CustomTextField.qml</file>
+        <file>common/NavigationBar.qml</file>
+        <file>common/StatusBadge.qml</file>
+        <file>pages/LoginPage.qml</file>
+        <file>pages/DashboardPage.qml</file>
+        <file>pages/ProfilePage.qml</file>
+        <file>modules/commercial/SaleValePage.qml</file>
+        <file>modules/commercial/InvoicePage.qml</file>
+        <file>modules/commercial/LiquidationPage.qml</file>
+        <file>modules/commercial/CommissionPage.qml</file>
+        <file>modules/warehouse/DeliveryValePage.qml</file>
+        <file>modules/warehouse/QualityCheckPage.qml</file>
+        <file>modules/warehouse/DailyCountPage.qml</file>
+        <file>modules/warehouse/StockAlertsPage.qml</file>
+        <file>modules/messenger/DeliveryStatusPage.qml</file>
+        <file>modules/messenger/CollectionPage.qml</file>
+        <file>modules/messenger/IncidentReportPage.qml</file>
+        <file>modules/custody/CustodyReceiptPage.qml</file>
+        <file>modules/custody/CustodyHistoryPage.qml</file>
+        <file>modules/admin/DashboardAdminPage.qml</file>
+        <file>modules/admin/ExpensesPage.qml</file>
+        <file>modules/admin/PayrollPage.qml</file>
+        <file>modules/admin/ConfigPage.qml</file>
+        <file>modules/admin/UserManagementPage.qml</file>
+        <file>dialogs/CuadreFinalDialog.qml</file>
+        <file>dialogs/ConfirmDialog.qml</file>
+        <file>dialogs/PrintDialog.qml</file>
+    </qresource>
+</RCC>
