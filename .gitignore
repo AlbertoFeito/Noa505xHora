@@ -1,33 +1,41 @@
-# Build directories
-build/
-build-*/
+# C++ objects and libs
+*.slo
+*.lo
 *.o
-*.obj
-*.exe
-*.dll
 *.a
-*.lib
+*.la
+*.lai
 *.so
+*.so.*
+*.dll
 *.dylib
+
+# Qt
 *.moc
-*.pch
-*.cache
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+*.qm
+*.prl
+*.qmlls.ini
+*.qmlproject.user
+*.qmlproject.user.*
 
 # CMake
-CMakeLists.txt.user
-cmake-build-*/
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.cmake
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-Makefile
-*.cmake
-
-# Qt Creator
-*.autosave
-*.user.*
-*.pro.user
-*.qmlc
-*.qmlcache
+Makefile*
+build/
+*build-*
 
 # IDE
 .vscode/
@@ -35,10 +43,13 @@ Makefile
 *.swp
 *.swo
 *~
+*.autosave
+*creator.user*
 
 # OS
 .DS_Store
 Thumbs.db
+compile_commands.json
 
-# Docs (opcional - si querés mantenerlos)
+# Docs (opcional)
 documentacion/
