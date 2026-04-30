@@ -230,32 +230,11 @@ Page {
 
         if (role === "almacen" || role === "administrador") {
             modules.push({
-                title: "Vale de Entrega",
-                description: "Recibir y preparar pedidos",
-                page: "modules/warehouse/DeliveryValePage.qml",
-                icon: "📦",
-                color: Theme.accent
-            })
-            modules.push({
-                title: "Control de Calidad",
-                description: "Verificación de productos",
-                page: "modules/warehouse/QualityCheckPage.qml",
-                icon: "✅",
-                color: Theme.success
-            })
-            modules.push({
-                title: "Conteo Físico",
-                description: "Inventario diario",
-                page: "modules/warehouse/DailyCountPage.qml",
-                icon: "🔢",
-                color: Theme.info
-            })
-            modules.push({
-                title: "Alertas Stock",
-                description: "Productos bajo mínimo",
-                page: "modules/warehouse/StockAlertsPage.qml",
-                icon: "⚠️",
-                color: Theme.warning
+                title: "Almacén",
+                description: "Gestión integral del almacén",
+                page: "modules/warehouse/WarehouseDashboardPage.qml",
+                icon: "🏭",
+                color: Theme.primary
             })
         }
 

@@ -63,6 +63,8 @@ public:
     Q_INVOKABLE QVariantList getCategories() const;
     Q_INVOKABLE void refreshProducts();
     Q_INVOKABLE bool adjustStock(int productId, int newQuantity, const QString &reason);
+    Q_INVOKABLE bool addStock(int productId, int quantityToAdd, const QString &invoiceNumber);
+    Q_INVOKABLE QVariantList getAllProductsList() const;
 
 signals:
     void lowStockCountChanged();

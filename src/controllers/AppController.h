@@ -40,6 +40,7 @@ public:
 
     Q_INVOKABLE QVariantMap getConfig() const;
     Q_INVOKABLE bool updateConfig(const QString &key, const QString &value);
+    Q_INVOKABLE bool addCategory(const QString &categoryName);
 
 signals:
     void isInitializedChanged();

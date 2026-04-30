@@ -155,14 +155,52 @@ QVariantList ProductManager::getLowStockProducts() const
     return list;
 }
 
+QVariantList ProductManager::getAllProductsList() const
+{
+    QVariantList list;
+    for (const ProductData &p : m_products) {
+        if (p.isActive) {
+            QVariantMap map;
+            map["id"] = p.id;
+            map["code"] = p.code;
+            map["name"] = p.name;
+            map["stock"] = p.stock;
+            map["category"] = p.category;
+            list.append(map);
+        }
+    }
+    return list;
+}
+
 QVariantList ProductManager::getCategories() const
 {
     QSet<QString> categories;
+
+    // Agregar categorías básicas por defecto si no hay productos
+    if (m_products.isEmpty()) {
+        categories << "Electrodomésticos" << "Alimentos" << "Útiles del Hogar"
+                  << "Bebidas" << "Limpieza" << "Cosméticos";
+    }
+
+    // Obtener categorías de los productos
     for (const ProductData &p : m_products) {
         if (!p.category.isEmpty()) categories.insert(p.category);
     }
+
+    // Crear lista de objetos para ComboBox
     QVariantList list;
-    for (const QString &cat : categories) list.append(cat);
+
+    // Agregar opción "Todas" al inicio
+    QVariantMap allOption;
+    allOption["category"] = "";
+    list.append(allOption);
+
+    // Agregar categorías
+    for (const QString &cat : categories) {
+        QVariantMap map;
+        map["category"] = cat;
+        list.append(map);
+    }
     return list;
 }
 
@@ -195,6 +233,43 @@ bool ProductManager::adjustStock(int productId, int newQuantity, const QString &
     }
 
     return updateProduct(productId, {{"stock", newQuantity}});
+}
+
+bool ProductManager::addStock(int productId, int quantityToAdd, const QString &invoiceNumber)
+{
+    // Sumar cantidad al stock actual
+    // Primero obtener el stock actual
+    QSqlQuery getQuery = m_dbManager->executeQuery(
+        "SELECT stock FROM products WHERE id = :id",
+        {{"id", productId}}
+    );
+
+    if (!getQuery.next()) {
+        qWarning() << "Product not found:" << productId;
+        return false;
+    }
+
+    int currentStock = getQuery.value("stock").toInt();
+    int newStock = currentStock + quantityToAdd;
+
+    // Actualizar el stock
+    bool success = updateProduct(productId, {{"stock", newStock}});
+
+    if (success) {
+        // Registrar la entrada en inventory_counts para trazabilidad
+        m_dbManager->executeQuery(
+            "INSERT INTO inventory_counts (product_id, expected_quantity, actual_quantity, notes, counted_by) "
+            "VALUES (:product_id, :expected, :actual, :notes, 0)",
+            {
+                {"product_id", productId},
+                {"expected", currentStock},
+                {"actual", newStock},
+                {"notes", "Entrada: Factura " + invoiceNumber}
+            }
+        );
+    }
+
+    return success;
 }
 
 void ProductManager::loadProducts()

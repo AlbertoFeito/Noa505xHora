@@ -15,6 +15,10 @@
         <file>modules/commercial/LiquidationPage.qml</file>
         <file>modules/commercial/CommissionPage.qml</file>
         <file>modules/warehouse/DeliveryValePage.qml</file>
+        <file>modules/warehouse/ProductEntryPage.qml</file>
+        <file>modules/warehouse/WarehouseDashboardPage.qml</file>
+        <file>modules/warehouse/AltaProductPage.qml</file>
+        <file>modules/warehouse/CategoriasPage.qml</file>
         <file>modules/warehouse/QualityCheckPage.qml</file>
         <file>modules/warehouse/DailyCountPage.qml</file>
         <file>modules/warehouse/StockAlertsPage.qml</file>

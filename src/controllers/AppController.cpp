@@ -68,3 +68,40 @@ bool AppController::updateConfig(const QString &key, const QString &value)
     );
     return query.lastError().type() == QSqlError::NoError;
 }
+
+bool AppController::addCategory(const QString &categoryName)
+{
+    // Las categorías se almacenan junto con los productos
+    // Verificamos si ya existe para no duplicar
+    QSqlQuery checkQuery = m_dbManager->executeQuery(
+        "SELECT DISTINCT category FROM products WHERE LOWER(category) = LOWER(:category)",
+        {{"category", categoryName}}
+    );
+
+    if (checkQuery.next()) {
+        // Ya existe la categoría
+        return false;
+    }
+
+    // Creamos un producto "dummy" temporal para crear la categoría
+    // Luego lo eliminamos pero la categoría queda en la lista de categorías
+    QSqlQuery insertQuery = m_dbManager->executeQuery(
+        "INSERT INTO products (code, name, category, description, sale_price, stock, min_stock, unit, is_active) "
+        "VALUES (:code, :name, :category, :description, 0, 0, 0, 'unidad', 0)",
+        {
+            {"code", "CAT-" + QString::number(QDateTime::currentSecsSinceEpoch())},
+            {"name", "CATEGORIA:" + categoryName},
+            {"category", categoryName},
+            {"description", "Categoría temporal"}
+        }
+    );
+
+    // Eliminar el producto temporal, pero la categoría queda
+    if (insertQuery.lastError().type() == QSqlError::NoError) {
+        int lastId = insertQuery.lastInsertId().toInt();
+        m_dbManager->executeQuery("DELETE FROM products WHERE id = :id", {{"id", lastId}});
+        return true;
+    }
+
+    return false;
+}

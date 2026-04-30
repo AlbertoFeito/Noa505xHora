@@ -36,6 +36,7 @@ cmake_install.cmake
 Makefile*
 build/
 *build-*
+deploy/
 
 # IDE
 .vscode/
@@ -45,6 +46,7 @@ build/
 *~
 *.autosave
 *creator.user*
+CMakeLists.txt.user
 
 # OS
 .DS_Store
