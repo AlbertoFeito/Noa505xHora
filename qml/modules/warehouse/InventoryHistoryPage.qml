@@ -15,6 +15,7 @@ Page {
 
     // Estado
     property var allMovements: []
+    property var productsFilter: [{id: 0, name: "Todos los productos"}]
 
     Component.onCompleted: {
         loadAllMovements()
@@ -40,7 +41,6 @@ Page {
                         id: typeFilter
                         Layout.fillWidth: true
                         model: ["Todos", "Entradas", "Salidas"]
-                        currentIndex: 0
                         onCurrentIndexChanged: {
                             filterMovements()
                         }
@@ -49,8 +49,8 @@ Page {
                     ComboBox {
                         id: productFilter
                         Layout.fillWidth: true
-                        model: allProductsModel
                         textRole: "name"
+                        model: productsFilter
                         currentIndex: 0
                         onCurrentIndexChanged: {
                             filterMovements()
@@ -170,12 +170,16 @@ Page {
 
     function loadAllMovements() {
         // Cargar productos para el filtro
+        var newProducts = [{id: 0, name: "Todos los productos"}]
         var products = ProductManager.getAllProductsList()
-        var productList = [{"id": 0, "name": "Todos los productos"}]
         for (var i = 0; i < products.length; i++) {
-            productList.push(products[i])
+            newProducts.push({id: products[i].id, name: products[i].name})
         }
-        allProductsModel = productList
+        productsFilter = newProducts
+
+        // Resetear índices de filtros
+        typeFilter.currentIndex = 0
+        productFilter.currentIndex = 0
 
         // Cargar entradas
         var entries = InventoryManager.getRecentEntries(100)
@@ -239,8 +243,12 @@ Page {
     }
 
     function filterMovements() {
-        var typeSelected = typeFilter.currentText
-        var productSelected = productFilter.currentIndex > 0 ? productFilter.model[productFilter.currentIndex] : null
+        // Usar índice del modelo en vez de currentText
+        var typeIndex = typeFilter.currentIndex
+        var typeSelected = typeIndex === 0 ? "Todos" : (typeIndex === 1 ? "Entradas" : "Salidas")
+
+        var productIndex = productFilter.currentIndex
+        var productSelected = productIndex > 0 ? productFilter.model[productIndex] : null
 
         var filtered = []
 
