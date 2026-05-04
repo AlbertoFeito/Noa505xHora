@@ -1,0 +1,3 @@
+Nombre de la sesión: modulo-almacen-completo
+Fecha: 2026-05-04
+Descripción: Completado el módulo Almacén con gestión de proveedores, productos con lotes, código automático y entradas de productos
