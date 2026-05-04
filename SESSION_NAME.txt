@@ -1,3 +1,48 @@
-Nombre de la sesión: modulo-almacen-completo
+Nombre de la sesión: warehouse-modulos-entrada-salida-historial
 Fecha: 2026-05-04
-Descripción: Completado el módulo Almacén con gestión de proveedores, productos con lotes, código automático y entradas de productos
+Último commit: 2896b46
+
+## Progreso del proyecto
+
+### Módulos del Almacén (1-11):
+1. Entrada Productos ✅
+2. Alta Productos ✅
+3. Categorías ✅
+4. Productos ✅
+5. Proveedores ✅
+6. Control de Calidad
+7. Conteo Diario
+8. Stock Bajo
+9. Salida de Productos ✅ (NUEVO)
+10. Vale de Entrega
+11. Historial de Movimientos ✅ (NUEVO)
+
+## Lo que se implementó hoy
+
+### Nuevas funcionalidades:
+- Salida de Productos (módulo 9): registra consumo/venta, reduce stock
+- Historial de Movimientos (módulo 11): combina entradas y salidas con filtros
+- Fix en hora local de la base de datos (UTC → hora local Cuba)
+
+### Archivos nuevos:
+- qml/modules/warehouse/ProductExitPage.qml
+- qml/modules/warehouse/InventoryHistoryPage.qml
+
+### Archivos modificados:
+- src/models/Product.cpp/h - método removeStock()
+- src/models/Inventory.cpp/h - método getRecentExits()
+- src/database/DatabaseManager.cpp - hora local en timestamps
+
+### Problemas corregidos en el camino:
+- QString::SkipEmptyParts → Qt::SkipEmptyParts (Qt6)
+- QVariant(QVariant::String) → QString() (deprecated)
+- Columna counted_at → created_at (no existía)
+- Filtros de combos usando índices en lugar de texto
+- CustomTextField: label por defecto vacío
+- getCategories() con parámetro includeAll para mostrar/ocultar "Todas"
+- ListModel vs array simple para filtros dinámicos
+
+## Para mañana (próximos pasos sugeridos):
+- Revisar que los filtros de historial funcionen correctamente
+- Posiblemente agregar: Merma/Ajuste de inventario, Valoración de inventario
+- Continuar con otros módulos del almacén que faltan (6, 7, 8, 10)
