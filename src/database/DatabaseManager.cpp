@@ -284,7 +284,7 @@ bool DatabaseManager::createTables()
             difference INTEGER GENERATED ALWAYS AS (actual_quantity - expected_quantity) STORED,
             notes TEXT,
             counted_by INTEGER,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
             FOREIGN KEY (product_id) REFERENCES products(id),
             FOREIGN KEY (counted_by) REFERENCES users(id)
         )
