@@ -93,7 +93,7 @@ Page {
 
                 delegate: ItemDelegate {
                     width: ListView.view.width
-                    visible: modelData.category !== "" // Ocultar opción "Todas"
+                    visible: modelData.category !== "Todas" // Ocultar opción "Todas"
 
                     contentItem: RowLayout {
                         Label {

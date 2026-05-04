@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE QVariantList getCountsByDate(const QDate &date) const;
     Q_INVOKABLE QVariantList getDiscrepancies(const QDate &date) const;
     Q_INVOKABLE QVariantList getRecentEntries(int limit = 20) const;
+    Q_INVOKABLE QVariantList getRecentExits(int limit = 20) const;
     Q_INVOKABLE void refreshCounts();
     Q_INVOKABLE int getTotalProducts() const;
     Q_INVOKABLE int getCountedProducts(const QDate &date) const;

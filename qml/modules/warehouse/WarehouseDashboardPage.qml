@@ -402,12 +402,42 @@ Page {
                     }
                 }
 
-                // 9. Vale de Entrega
+                // 9. Salida de Productos
                 CustomCard {
                     Layout.fillWidth: true
                     Layout.minimumHeight: 120
                     elevation: 1
-                    title: "9. Vale de Entrega"
+                    title: "9. Salida de Productos"
+                    subtitle: "Registrar consumo/venta"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            appWindow.navigateTo("modules/warehouse/ProductExitPage.qml")
+                        }
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "📤"
+                            font.pixelSize: 32
+                            color: Theme.error
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // 10. Vale de Entrega
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "10. Vale de Entrega"
                     subtitle: "Recibir y preparar pedidos"
 
                     MouseArea {
@@ -422,6 +452,36 @@ Page {
                             text: "📦"
                             font.pixelSize: 32
                             color: Theme.accent
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // 11. Historial de Movimientos
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "11. Historial"
+                    subtitle: "Ver todas las entradas y salidas"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            appWindow.navigateTo("modules/warehouse/InventoryHistoryPage.qml")
+                        }
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "📋"
+                            font.pixelSize: 32
+                            color: Theme.info
                         }
                         Item { Layout.fillWidth: true }
                         Label {

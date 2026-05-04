@@ -172,6 +172,54 @@ QVariantList InventoryManager::getRecentEntries(int limit) const
     return list;
 }
 
+QVariantList InventoryManager::getRecentExits(int limit) const
+{
+    QVariantList list;
+
+    QString sql = "SELECT id, product_id, expected_quantity, actual_quantity, notes, created_at "
+                "FROM inventory_counts "
+                "WHERE notes LIKE 'Salida:%' "
+                "ORDER BY created_at DESC LIMIT " + QString::number(limit);
+
+    QSqlDatabase db = QSqlDatabase::database();
+    QSqlQuery query(db);
+
+    if (!query.exec(sql)) {
+        qWarning() << "getRecentExits query failed:" << query.lastError().text();
+        return list;
+    }
+
+    while (query.next()) {
+        int productId = query.value("product_id").toInt();
+
+        QSqlQuery prodQuery(db);
+        prodQuery.prepare("SELECT name, code FROM products WHERE id = :id");
+        prodQuery.bindValue(":id", productId);
+        prodQuery.exec();
+
+        QString productName = "Producto";
+        QString productCode = "N/A";
+        if (prodQuery.next()) {
+            productName = prodQuery.value("name").toString();
+            productCode = prodQuery.value("code").toString();
+        }
+
+        int quantity = query.value("expected_quantity").toInt() - query.value("actual_quantity").toInt();
+
+        QVariantMap map;
+        map["id"] = query.value("id").toInt();
+        map["productId"] = productId;
+        map["productName"] = productName;
+        map["productCode"] = productCode;
+        map["quantity"] = quantity;
+        map["reason"] = query.value("notes").toString().replace("Salida: ", "");
+        map["date"] = query.value("created_at").toString();
+        list.append(map);
+    }
+
+    return list;
+}
+
 QVariantList InventoryManager::getDiscrepancies(const QDate &date) const
 {
     QVariantList list;

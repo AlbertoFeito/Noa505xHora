@@ -65,9 +65,9 @@ Page {
                     ComboBox {
                         id: categoryCombo
                         Layout.fillWidth: true
-                        model: ProductManager.getCategories()
+                        model: ProductManager.getCategories(false)
                         textRole: "category"
-                        currentIndex: 1  // 0 = "Todas", 1 = "SinCategoría" por defecto
+                        currentIndex: 0  // SinCategoría por defecto (sin "Todas")
                     }
 
                     CustomTextField {

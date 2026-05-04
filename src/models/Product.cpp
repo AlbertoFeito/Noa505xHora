@@ -193,7 +193,7 @@ QVariantList ProductManager::getAllProductsList() const
     return list;
 }
 
-QVariantList ProductManager::getCategories() const
+QVariantList ProductManager::getCategories(bool includeAll) const
 {
     // Primero asegurar que SinCategoría existe
     QSqlQuery sinCatCheck = m_dbManager->executeQuery(
@@ -223,11 +223,13 @@ QVariantList ProductManager::getCategories() const
 
     QVariantList list;
 
-    // Agregar opción "Todas" al inicio
-    QVariantMap allOption;
-    allOption["category"] = "Todas";
-    allOption["count"] = 0;
-    list.append(allOption);
+    // Agregar opción "Todas" solo si includeAll es true
+    if (includeAll) {
+        QVariantMap allOption;
+        allOption["category"] = "Todas";
+        allOption["count"] = 0;
+        list.append(allOption);
+    }
 
     // Obtener todas las categorías (incluyendo las que no tienen productos activos)
     QSqlQuery catQuery = m_dbManager->executeQuery(
@@ -332,6 +334,49 @@ bool ProductManager::addStock(int productId, int quantityToAdd, const QString &i
             }
         );
         qDebug() << "Insert into inventory_counts result:" << insertQuery.lastError().text();
+    }
+
+    return success;
+}
+
+bool ProductManager::removeStock(int productId, int quantityToRemove, const QString &reason)
+{
+    // Obtener stock actual
+    QSqlQuery getQuery = m_dbManager->executeQuery(
+        "SELECT stock FROM products WHERE id = :id",
+        {{"id", productId}}
+    );
+
+    if (!getQuery.next()) {
+        qWarning() << "Product not found:" << productId;
+        return false;
+    }
+
+    int currentStock = getQuery.value("stock").toInt();
+
+    // Verificar que hay suficiente stock
+    if (quantityToRemove > currentStock) {
+        qWarning() << "Insufficient stock for product" << productId;
+        return false;
+    }
+
+    int newStock = currentStock - quantityToRemove;
+
+    // Actualizar el stock
+    bool success = updateProduct(productId, {{"stock", newStock}});
+
+    if (success) {
+        // Registrar la salida en inventory_counts para trazabilidad
+        QSqlQuery insertQuery = m_dbManager->executeQuery(
+            "INSERT INTO inventory_counts (product_id, expected_quantity, actual_quantity, notes, counted_by) "
+            "VALUES (:product_id, :expected, :actual, :notes, 0)",
+            {
+                {"product_id", productId},
+                {"expected", currentStock},
+                {"actual", newStock},
+                {"notes", "Salida: " + reason}
+            }
+        );
     }
 
     return success;

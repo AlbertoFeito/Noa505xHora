@@ -67,10 +67,11 @@ public:
     Q_INVOKABLE bool deleteProduct(int id);
     Q_INVOKABLE QVariantMap getProduct(int id) const;
     Q_INVOKABLE QVariantList getLowStockProducts() const;
-    Q_INVOKABLE QVariantList getCategories() const;
+    Q_INVOKABLE QVariantList getCategories(bool includeAll = true) const;
     Q_INVOKABLE void refreshProducts();
     Q_INVOKABLE bool adjustStock(int productId, int newQuantity, const QString &reason);
     Q_INVOKABLE bool addStock(int productId, int quantityToAdd, const QString &invoiceNumber);
+    Q_INVOKABLE bool removeStock(int productId, int quantityToRemove, const QString &reason);
     Q_INVOKABLE QVariantList getAllProductsList() const;
 
 signals:
