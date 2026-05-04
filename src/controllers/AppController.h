@@ -41,6 +41,14 @@ public:
     Q_INVOKABLE QVariantMap getConfig() const;
     Q_INVOKABLE bool updateConfig(const QString &key, const QString &value);
     Q_INVOKABLE bool addCategory(const QString &categoryName);
+    Q_INVOKABLE bool deleteCategory(const QString &categoryName);
+
+    // Proveedores
+    Q_INVOKABLE QVariantList getSuppliersList() const;
+    Q_INVOKABLE bool addSupplier(const QString &name, const QString &contact, const QString &phone, const QString &email, const QString &address);
+    Q_INVOKABLE bool deleteSupplier(int id);
+    Q_INVOKABLE bool updateSupplier(int id, const QString &name, const QString &contact, const QString &phone, const QString &email, const QString &address);
+    Q_INVOKABLE QString generateProductCode();
 
 signals:
     void isInitializedChanged();

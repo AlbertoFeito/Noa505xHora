@@ -6,7 +6,7 @@ import ".."
 TextField {
     id: control
 
-    property string label: "Etiqueta"        // Label principal
+    property string label: ""        // Label principal (vacío por defecto)
     property string placeholder: "Escriba..." // Placeholder cuando está vacío
     property bool required: false
     property string errorText: ""

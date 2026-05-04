@@ -116,6 +116,62 @@ QVariantList InventoryManager::getCountsByDate(const QDate &date) const
     return list;
 }
 
+QVariantList InventoryManager::getRecentEntries(int limit) const
+{
+    QVariantList list;
+
+    qDebug() << "getRecentEntries called with limit:" << limit;
+
+    // Query directo usando QSqlQuery directo (sin el DatabaseManager wrapper)
+    QString sql = "SELECT id, product_id, expected_quantity, actual_quantity, notes, created_at "
+                "FROM inventory_counts "
+                "WHERE notes LIKE 'Entrada:%' "
+                "ORDER BY created_at DESC LIMIT " + QString::number(limit);
+
+    // Usar database directamente
+    QSqlDatabase db = QSqlDatabase::database();
+    QSqlQuery query(db);
+
+    if (!query.exec(sql)) {
+        qWarning() << "Query failed:" << query.lastError().text();
+        return list;
+    }
+
+    // Si el query no devuelve error pero no hay resultados, está bien (puede que no haya entradas)
+    // Recorrer los resultados
+    while (query.next()) {
+        int productId = query.value("product_id").toInt();
+
+        // Obtener nombre del producto
+        QSqlQuery prodQuery(db);
+        prodQuery.prepare("SELECT name, code FROM products WHERE id = :id");
+        prodQuery.bindValue(":id", productId);
+        prodQuery.exec();
+
+        QString productName = "Producto";
+        QString productCode = "N/A";
+        if (prodQuery.next()) {
+            productName = prodQuery.value("name").toString();
+            productCode = prodQuery.value("code").toString();
+        }
+
+        QVariantMap map;
+        map["id"] = query.value("id").toInt();
+        map["productId"] = productId;
+        map["productName"] = productName;
+        map["productCode"] = productCode;
+        map["previousStock"] = query.value("expected_quantity").toInt();
+        map["newStock"] = query.value("actual_quantity").toInt();
+        map["addedQuantity"] = query.value("actual_quantity").toInt() - query.value("expected_quantity").toInt();
+        map["notes"] = query.value("notes").toString();
+        map["date"] = query.value("created_at").toString();
+        list.append(map);
+    }
+
+    qDebug() << "Returning" << list.size() << "entries";
+    return list;
+}
+
 QVariantList InventoryManager::getDiscrepancies(const QDate &date) const
 {
     QVariantList list;

@@ -30,6 +30,8 @@ QVariant ProductManager::data(const QModelIndex &index, int role) const
         case StockRole: return product.stock;
         case MinStockRole: return product.minStock;
         case UnitRole: return product.unit;
+        case SupplierRole: return product.supplier;
+        case LoteRole: return product.lote;
         case IsActiveRole: return product.isActive;
     }
     return QVariant();
@@ -48,6 +50,8 @@ QHash<int, QByteArray> ProductManager::roleNames() const
     roles[StockRole] = "stock";
     roles[MinStockRole] = "minStock";
     roles[UnitRole] = "unit";
+    roles[SupplierRole] = "supplier";
+    roles[LoteRole] = "lote";
     roles[IsActiveRole] = "isActive";
     return roles;
 }
@@ -63,17 +67,26 @@ int ProductManager::lowStockCount() const
 
 bool ProductManager::addProduct(const QString &code, const QString &name, const QString &category,
                                  double salePrice, int stock, const QString &unit,
-                                 const QString &description, int minStock)
+                                 const QString &description, int minStock, double purchasePrice, const QString &supplier,
+                                 const QString &loteInput)
 {
+    // Si se proporciona lote, usarlo; si no, generar automáticamente
+    QString lote = loteInput.isEmpty()
+        ? "LOTE-" + QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss") + "-" + supplier
+        : loteInput;
+
     QSqlQuery query = m_dbManager->executeQuery(
-        "INSERT INTO products (code, name, category, description, sale_price, stock, min_stock, unit) "
-        "VALUES (:code, :name, :category, :description, :sale_price, :stock, :min_stock, :unit)",
+        "INSERT INTO products (code, name, category, description, sale_price, purchase_price, supplier, lote, stock, min_stock, unit) "
+        "VALUES (:code, :name, :category, :description, :sale_price, :purchase_price, :supplier, :lote, :stock, :min_stock, :unit)",
         {
             {"code", code},
             {"name", name},
             {"category", category},
-            {"description", description.isEmpty() ? QVariant(QVariant::String) : description},
+            {"description", description.isEmpty() ? QString() : description},
             {"sale_price", salePrice},
+            {"purchase_price", purchasePrice},
+            {"supplier", supplier.isEmpty() ? QString() : supplier},
+            {"lote", lote},
             {"stock", stock},
             {"min_stock", minStock},
             {"unit", unit}
@@ -95,8 +108,10 @@ bool ProductManager::updateProduct(int id, const QVariantMap &fields)
     QVariantMap bindings = {{"id", id}};
 
     if (fields.contains("name")) { setParts << "name = :name"; bindings["name"] = fields["name"]; }
+    if (fields.contains("code")) { setParts << "code = :code"; bindings["code"] = fields["code"]; }
     if (fields.contains("category")) { setParts << "category = :category"; bindings["category"] = fields["category"]; }
     if (fields.contains("salePrice")) { setParts << "sale_price = :sale_price"; bindings["sale_price"] = fields["salePrice"]; }
+    if (fields.contains("purchasePrice")) { setParts << "purchase_price = :purchase_price"; bindings["purchase_price"] = fields["purchasePrice"]; }
     if (fields.contains("stock")) { setParts << "stock = :stock"; bindings["stock"] = fields["stock"]; }
     if (fields.contains("minStock")) { setParts << "min_stock = :min_stock"; bindings["min_stock"] = fields["minStock"]; }
     if (fields.contains("unit")) { setParts << "unit = :unit"; bindings["unit"] = fields["unit"]; }
@@ -165,7 +180,13 @@ QVariantList ProductManager::getAllProductsList() const
             map["code"] = p.code;
             map["name"] = p.name;
             map["stock"] = p.stock;
+            map["minStock"] = p.minStock;
             map["category"] = p.category;
+            map["salePrice"] = p.salePrice;
+            map["purchasePrice"] = p.purchasePrice;
+            map["supplier"] = p.supplier;
+            map["lote"] = p.lote;
+            map["unit"] = p.unit;
             list.append(map);
         }
     }
@@ -174,33 +195,76 @@ QVariantList ProductManager::getAllProductsList() const
 
 QVariantList ProductManager::getCategories() const
 {
-    QSet<QString> categories;
-
-    // Agregar categorías básicas por defecto si no hay productos
-    if (m_products.isEmpty()) {
-        categories << "Electrodomésticos" << "Alimentos" << "Útiles del Hogar"
-                  << "Bebidas" << "Limpieza" << "Cosméticos";
+    // Primero asegurar que SinCategoría existe
+    QSqlQuery sinCatCheck = m_dbManager->executeQuery(
+        "SELECT category FROM products WHERE category = 'SinCategoría'"
+    );
+    if (!sinCatCheck.next()) {
+        // Crear SinCategoría si no existe
+        m_dbManager->executeQuery(
+            "INSERT INTO products (code, name, category, description, sale_price, stock, min_stock, unit, is_active) "
+            "VALUES (:code, :name, :category, :description, 0, 0, 0, 'unidad', 0)",
+            {
+                {"code", "CAT-SINCAT"},
+                {"name", "CATEGORIA:SinCategoría"},
+                {"category", "SinCategoría"},
+                {"description", "Categoría por defecto para productos sin categoría"}
+            }
+        );
     }
 
-    // Obtener categorías de los productos
-    for (const ProductData &p : m_products) {
-        if (!p.category.isEmpty()) categories.insert(p.category);
-    }
+    // Consultar categorías directamente de la BD
+    // Solo cuenta productos ACTIVOS (reales), no los dummy de categorías
+    QSqlQuery query = m_dbManager->executeQuery(
+        "SELECT category, COUNT(*) as count FROM products "
+        "WHERE category != '' AND category IS NOT NULL AND is_active = 1 "
+        "GROUP BY category ORDER BY category"
+    );
 
-    // Crear lista de objetos para ComboBox
     QVariantList list;
 
     // Agregar opción "Todas" al inicio
     QVariantMap allOption;
-    allOption["category"] = "";
+    allOption["category"] = "Todas";
+    allOption["count"] = 0;
     list.append(allOption);
 
-    // Agregar categorías
-    for (const QString &cat : categories) {
+    // Obtener todas las categorías (incluyendo las que no tienen productos activos)
+    QSqlQuery catQuery = m_dbManager->executeQuery(
+        "SELECT DISTINCT category FROM products "
+        "WHERE category != '' AND category IS NOT NULL "
+        "ORDER BY category"
+    );
+
+    QSet<QString> existingCategories;
+    while (catQuery.next()) {
+        existingCategories.insert(catQuery.value("category").toString());
+    }
+
+    // Mapear counts a las categorías
+    QMap<QString, int> counts;
+    while (query.next()) {
+        counts[query.value("category").toString()] = query.value("count").toInt();
+    }
+
+    // Agregar SinCategoría primero (si existe)
+    if (existingCategories.contains("SinCategoría")) {
         QVariantMap map;
-        map["category"] = cat;
+        map["category"] = "SinCategoría";
+        map["count"] = counts.value("SinCategoría", 0);
         list.append(map);
     }
+
+    // Agregar las demás categorías (excepto SinCategoría que ya está)
+    for (const QString &cat : existingCategories) {
+        if (cat != "SinCategoría") {
+            QVariantMap map;
+            map["category"] = cat;
+            map["count"] = counts.value(cat, 0);
+            list.append(map);
+        }
+    }
+
     return list;
 }
 
@@ -257,7 +321,7 @@ bool ProductManager::addStock(int productId, int quantityToAdd, const QString &i
 
     if (success) {
         // Registrar la entrada en inventory_counts para trazabilidad
-        m_dbManager->executeQuery(
+        QSqlQuery insertQuery = m_dbManager->executeQuery(
             "INSERT INTO inventory_counts (product_id, expected_quantity, actual_quantity, notes, counted_by) "
             "VALUES (:product_id, :expected, :actual, :notes, 0)",
             {
@@ -267,6 +331,7 @@ bool ProductManager::addStock(int productId, int quantityToAdd, const QString &i
                 {"notes", "Entrada: Factura " + invoiceNumber}
             }
         );
+        qDebug() << "Insert into inventory_counts result:" << insertQuery.lastError().text();
     }
 
     return success;
@@ -276,7 +341,7 @@ void ProductManager::loadProducts()
 {
     QSqlQuery query = m_dbManager->executeQuery(
         "SELECT id, code, name, category, description, purchase_price, sale_price, "
-        "stock, min_stock, unit, is_active, created_at FROM products WHERE is_active = 1 ORDER BY name"
+        "stock, min_stock, unit, supplier, lote, is_active, created_at FROM products WHERE is_active = 1 ORDER BY name"
     );
 
     while (query.next()) {
@@ -297,7 +362,20 @@ ProductData ProductManager::productFromQuery(const QSqlQuery &query) const
     p.stock = query.value("stock").toInt();
     p.minStock = query.value("min_stock").toInt();
     p.unit = query.value("unit").toString();
+    p.supplier = query.value("supplier").toString();
+    p.lote = query.value("lote").toString();
     p.isActive = query.value("is_active").toBool();
     p.createdAt = query.value("created_at").toString();
     return p;
+}
+
+QString ProductManager::generateProductCode() const
+{
+    // Generar código de producto automático: PROD-0001, PROD-0002, etc.
+    QSqlQuery countQuery = m_dbManager->executeQuery("SELECT COUNT(*) FROM products WHERE is_active = 1");
+    int nextNum = 1;
+    if (countQuery.next()) {
+        nextNum = countQuery.value(0).toInt() + 1;
+    }
+    return QString("PROD-%1").arg(nextNum, 4, 10, QChar('0'));
 }

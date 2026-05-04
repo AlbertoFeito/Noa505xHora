@@ -48,7 +48,23 @@ bool DatabaseManager::initialize()
         qCritical() << "Failed to create tables";
         return false;
     }
-    
+
+    // Migración: agregar columnas supplier y lote a products si no existen
+    QSqlQuery checkSupplier(m_db);
+    checkSupplier.exec("PRAGMA table_info(products)");
+    bool hasSupplier = false, hasLote = false;
+    while (checkSupplier.next()) {
+        QString colName = checkSupplier.value(1).toString();
+        if (colName == "supplier") hasSupplier = true;
+        if (colName == "lote") hasLote = true;
+    }
+    if (!hasSupplier) {
+        m_db.exec("ALTER TABLE products ADD COLUMN supplier TEXT");
+    }
+    if (!hasLote) {
+        m_db.exec("ALTER TABLE products ADD COLUMN lote TEXT");
+    }
+
     if (!seedInitialData()) {
         qWarning() << "Failed to seed initial data (may already exist)";
     }
@@ -133,6 +149,23 @@ bool DatabaseManager::createTables()
             stock INTEGER NOT NULL DEFAULT 0,
             min_stock INTEGER DEFAULT 0,
             unit TEXT DEFAULT 'unidad',
+            supplier TEXT,
+            lote TEXT,
+            is_active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    )";
+
+    // Tabla de proveedores
+    createStatements << R"(
+        CREATE TABLE IF NOT EXISTS suppliers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code TEXT UNIQUE,
+            name TEXT NOT NULL,
+            contact_person TEXT,
+            phone TEXT,
+            email TEXT,
+            address TEXT,
             is_active INTEGER DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -356,7 +389,23 @@ bool DatabaseManager::createTables()
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     )";
-    
+
+    // Tabla de proveedores
+    createStatements << R"(
+        CREATE TABLE IF NOT EXISTS suppliers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code TEXT UNIQUE NOT NULL,
+            name TEXT NOT NULL,
+            contact_person TEXT,
+            phone TEXT,
+            email TEXT,
+            address TEXT,
+            notes TEXT,
+            is_active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    )";
+
     // Índices para optimización
     createStatements << "CREATE INDEX IF NOT EXISTS idx_sales_status ON sales(status)";
     createStatements << "CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(created_at)";

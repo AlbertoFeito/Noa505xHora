@@ -22,183 +22,322 @@ Page {
             anchors.margins: Theme.spacingMd
             spacing: Theme.spacingMd
 
+            // Resumen del almacén
+            CustomCard {
+                Layout.fillWidth: true
+                title: "Resumen del Almacén"
+                subtitle: Qt.formatDate(new Date(), "dd/MM/yyyy")
+
+                content: RowLayout {
+                    spacing: Theme.spacingMd
+
+                    // Total Productos
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 80
+                        radius: Theme.radiusSm
+                        color: Theme.primary
+                        opacity: 0.2
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: Theme.spacingSm
+
+                            Label {
+                                text: "Total Productos"
+                                font.pixelSize: 12
+                                font.weight: Font.Medium
+                                color: Theme.primary
+                                Layout.alignment: Qt.AlignLeft
+                            }
+
+                            Label {
+                                text: ProductManager.rowCount()
+                                font.pixelSize: 28
+                                font.weight: Font.Bold
+                                color: Theme.primary
+                                Layout.alignment: Qt.AlignLeft
+                            }
+
+                            Label {
+                                text: "ítems"
+                                font.pixelSize: 11
+                                color: Theme.primary
+                                opacity: 0.7
+                                Layout.alignment: Qt.AlignLeft
+                            }
+                        }
+                    }
+
+                    // Stock Bajo
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 80
+                        radius: Theme.radiusSm
+                        color: Theme.error
+                        opacity: 0.2
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: Theme.spacingSm
+
+                            Label {
+                                text: "Stock Bajo"
+                                font.pixelSize: 12
+                                font.weight: Font.Medium
+                                color: Theme.error
+                                Layout.alignment: Qt.AlignLeft
+                            }
+
+                            Label {
+                                text: ProductManager.lowStockCount
+                                font.pixelSize: 28
+                                font.weight: Font.Bold
+                                color: Theme.error
+                                Layout.alignment: Qt.AlignLeft
+                            }
+
+                            Label {
+                                text: "alertas"
+                                font.pixelSize: 11
+                                color: Theme.error
+                                opacity: 0.7
+                                Layout.alignment: Qt.AlignLeft
+                            }
+                        }
+                    }
+
+                    // Categorías (menos 1 porque incluye "Todas")
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 80
+                        radius: Theme.radiusSm
+                        color: Theme.info
+                        opacity: 0.2
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: Theme.spacingSm
+
+                            Label {
+                                text: "Categorías"
+                                font.pixelSize: 12
+                                font.weight: Font.Medium
+                                color: Theme.info
+                                Layout.alignment: Qt.AlignLeft
+                            }
+
+                            Label {
+                                text: ProductManager.getCategories().length - 1
+                                font.pixelSize: 28
+                                font.weight: Font.Bold
+                                color: Theme.info
+                                Layout.alignment: Qt.AlignLeft
+                            }
+
+                            Label {
+                                text: "tipos"
+                                font.pixelSize: 11
+                                color: Theme.info
+                                opacity: 0.7
+                                Layout.alignment: Qt.AlignLeft
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Label módulos
+            Label {
+                text: "Módulos de Almacén"
+                font.pixelSize: 18
+                font.weight: Font.Medium
+                color: Theme.textPrimary
+                Layout.leftMargin: Theme.spacingSm
+            }
+
             // Grid de módulos de almacén
             GridLayout {
                 columns: Math.min(2, Math.floor(parent.width / 250))
                 columnSpacing: Theme.spacingMd
                 rowSpacing: Theme.spacingMd
 
-                // Vale de Entrega
+                // 1. Entrada Productos
                 CustomCard {
                     Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "1. Entrada Productos"
+                    subtitle: "Registrar productos recibidos"
 
-                    content: MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            appWindow.navigateTo("modules/warehouse/DeliveryValePage.qml")
-                        }
-
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
-
-                            Label {
-                                text: "📦"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Vale de Entrega"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Recibir y preparar pedidos"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                        }
-                    }
-                }
-
-                // Entrada Productos
-                CustomCard {
-                    Layout.fillWidth: true
-
-                    content: MouseArea {
+                    MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             appWindow.navigateTo("modules/warehouse/ProductEntryPage.qml")
                         }
+                    }
 
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
-
-                            Label {
-                                text: "📥"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Entrada Productos"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Registrar productos recibidos"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    content: RowLayout {
+                        Label {
+                            text: "📥"
+                            font.pixelSize: 32
+                            color: Theme.success
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
                         }
                     }
                 }
 
-                // Alta Productos
+                // 2. Alta Productos
                 CustomCard {
                     Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "2. Alta Productos"
+                    subtitle: "Crear nuevos productos"
 
-                    content: MouseArea {
+                    MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             appWindow.navigateTo("modules/warehouse/AltaProductPage.qml")
                         }
+                    }
 
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
-
-                            Label {
-                                text: "➕"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Alta Productos"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Crear nuevos productos"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    content: RowLayout {
+                        Label {
+                            text: "➕"
+                            font.pixelSize: 32
+                            color: Theme.primary
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
                         }
                     }
                 }
 
-                // Categorías
+                // 3. Categorías
                 CustomCard {
                     Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "3. Categorías"
+                    subtitle: "Gestionar categorías"
 
-                    content: MouseArea {
+                    MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             appWindow.navigateTo("modules/warehouse/CategoriasPage.qml")
                         }
+                    }
 
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
-
-                            Label {
-                                text: "🏷️"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Categorías"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Gestionar categorías"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    content: RowLayout {
+                        Label {
+                            text: "🏷️"
+                            font.pixelSize: 32
+                            color: Theme.info
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
                         }
                     }
                 }
 
-                // Control de Calidad
+                // 4. Productos
                 CustomCard {
                     Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "4. Productos"
+                    subtitle: "Ver y editar productos"
 
-                    content: MouseArea {
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            appWindow.navigateTo("modules/warehouse/ProductListPage.qml")
+                        }
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "📋"
+                            font.pixelSize: 32
+                            color: Theme.primary
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // 5. Proveedores
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "5. Proveedores"
+                    subtitle: "Gestionar proveedores"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            appWindow.navigateTo("modules/warehouse/ProveedoresPage.qml")
+                        }
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "🏢"
+                            font.pixelSize: 32
+                            color: Theme.warning
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // 6. Control de Calidad
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "6. Control de Calidad"
+                    subtitle: "Verificación de productos"
+
+                    MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             appWindow.navigateTo("modules/warehouse/QualityCheckPage.qml")
                         }
+                    }
 
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
-
-                            Label {
-                                text: "✅"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Control de Calidad"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Verificación de productos"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    content: RowLayout {
+                        Label {
+                            text: "✅"
+                            font.pixelSize: 32
+                            color: Theme.success
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
                         }
                     }
                 }
@@ -206,69 +345,89 @@ Page {
                 // Conteo Diario
                 CustomCard {
                     Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "7. Conteo Diario"
+                    subtitle: "Registro de inventario diario"
 
-                    content: MouseArea {
+                    MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             appWindow.navigateTo("modules/warehouse/DailyCountPage.qml")
                         }
+                    }
 
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
-
-                            Label {
-                                text: "📊"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Conteo Diario"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Registro de inventario diario"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                    content: RowLayout {
+                        Label {
+                            text: "📊"
+                            font.pixelSize: 32
+                            color: Theme.warning
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
                         }
                     }
                 }
 
-                // Stock Bajo
+                // 8. Stock Bajo
                 CustomCard {
                     Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "8. Stock Bajo"
+                    subtitle: "Productos por debajo del mínimo"
 
-                    content: MouseArea {
+                    MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             appWindow.navigateTo("modules/warehouse/StockAlertsPage.qml")
                         }
+                    }
 
-                        ColumnLayout {
-                            spacing: Theme.spacingSm
+                    content: RowLayout {
+                        Label {
+                            text: "⚠️"
+                            font.pixelSize: 32
+                            color: Theme.error
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
+                        }
+                    }
+                }
 
-                            Label {
-                                text: "⚠️"
-                                font.pixelSize: 32
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Stock Bajo"
-                                font.pixelSize: 16
-                                font.weight: Font.Medium
-                                color: Theme.textPrimary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Label {
-                                text: "Productos por debajo del mínimo"
-                                font.pixelSize: 12
-                                color: Theme.textSecondary
-                                Layout.alignment: Qt.AlignHCenter
-                            }
+                // 9. Vale de Entrega
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 120
+                    elevation: 1
+                    title: "9. Vale de Entrega"
+                    subtitle: "Recibir y preparar pedidos"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            appWindow.navigateTo("modules/warehouse/DeliveryValePage.qml")
+                        }
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "📦"
+                            font.pixelSize: 32
+                            color: Theme.accent
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 20
+                            color: Theme.accent
                         }
                     }
                 }

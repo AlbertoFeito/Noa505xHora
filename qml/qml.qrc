@@ -22,6 +22,8 @@
         <file>modules/warehouse/QualityCheckPage.qml</file>
         <file>modules/warehouse/DailyCountPage.qml</file>
         <file>modules/warehouse/StockAlertsPage.qml</file>
+        <file>modules/warehouse/ProductListPage.qml</file>
+        <file>modules/warehouse/ProveedoresPage.qml</file>
         <file>modules/messenger/DeliveryStatusPage.qml</file>
         <file>modules/messenger/CollectionPage.qml</file>
         <file>modules/messenger/IncidentReportPage.qml</file>

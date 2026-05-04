@@ -21,6 +21,8 @@ struct ProductData {
     int stock = 0;
     int minStock = 0;
     QString unit;
+    QString supplier;    // Proveedor
+    QString lote;        // Identificador de lote/compra
     bool isActive = true;
     QString createdAt;
 };
@@ -42,6 +44,8 @@ public:
         StockRole,
         MinStockRole,
         UnitRole,
+        SupplierRole,
+        LoteRole,
         IsActiveRole
     };
 
@@ -55,7 +59,10 @@ public:
 
     Q_INVOKABLE bool addProduct(const QString &code, const QString &name, const QString &category,
                                  double salePrice, int stock, const QString &unit = QStringLiteral("unidad"),
-                                 const QString &description = QString(), int minStock = 0);
+                                 const QString &description = QString(), int minStock = 0,
+                                 double purchasePrice = 0, const QString &supplier = QString(),
+                                 const QString &lote = QString());
+    Q_INVOKABLE QString generateProductCode() const;
     Q_INVOKABLE bool updateProduct(int id, const QVariantMap &fields);
     Q_INVOKABLE bool deleteProduct(int id);
     Q_INVOKABLE QVariantMap getProduct(int id) const;
