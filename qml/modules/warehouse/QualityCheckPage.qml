@@ -113,7 +113,7 @@ Page {
                         id: checklistView
                         Layout.fillWidth: true
                         model: checklistItems
-                        height: model.length * 40
+                        height: 200
 
                         delegate: RowLayout {
                             width: ListView.view.width
