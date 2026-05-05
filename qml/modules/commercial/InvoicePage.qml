@@ -32,15 +32,6 @@ Page {
                 model: SaleManager.getSalesByStatus("pendiente")
                 clip: true
 
-                emptyLabel: Label {
-                    text: "No hay ventas pendientes"
-                    font.pixelSize: 14
-                    color: Theme.textSecondary
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    Layout.fillWidth: true
-                }
-
                 delegate: ItemDelegate {
                     width: ListView.view.width
                     contentItem: RowLayout {
