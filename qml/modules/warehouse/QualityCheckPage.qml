@@ -136,23 +136,37 @@ Page {
                     }
 
                     // Progress
-                    Label {
-                        text: "Completado: " + getCheckedCount() + "/" + checklistItems.length
-                        font.pixelSize: 12
-                        color: getCheckedCount() === checklistItems.length ? Theme.success : Theme.textSecondary
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Label {
+                            text: "Completado: " + getCheckedCount() + "/" + checklistItems.length
+                            font.pixelSize: 13
+                            font.weight: Font.Medium
+                            color: getCheckedCount() === checklistItems.length ? Theme.success : Theme.warning
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: getCheckedCount() === checklistItems.length ? "✅ Listo" : "⏳ Pendiente"
+                            font.pixelSize: 13
+                            color: getCheckedCount() === checklistItems.length ? Theme.success : Theme.textSecondary
+                        }
                     }
 
                     CustomButton {
                         Layout.fillWidth: true
-                        text: "✅ Aprobar Control de Calidad"
+                        text: "✅ Aprobar y Preparar"
                         type: getCheckedCount() === checklistItems.length ? 2 : 0
-                        enabled: getCheckedCount() === checklistItems.length
-                        onClicked: {
-                            // Aquí se registraría el control de calidad
-                            appWindow.showToast("Control de calidad aprobado para venta #" + selectedSale.saleNumber)
-                            // Optionally update sale status
-                            // SaleManager.updateSaleStatus(selectedSale.id, "verificado")
-                            selectedSale = null
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                console.log("QC approved for sale:", selectedSale.saleNumber)
+                                // Update status to "preparado"
+                                SaleManager.updateSaleStatus(selectedSale.id, "preparado")
+                                appWindow.showToast("Control aprobado - Venta #" + selectedSale.saleNumber + " preparada")
+                                selectedSale = null
+                                SaleManager.refreshSales()
+                            }
                         }
                     }
                 }
