@@ -109,6 +109,13 @@ Page {
                 content: ColumnLayout {
                     spacing: Theme.spacingSm
 
+                    // Function to handle checkbox
+                    function toggleCheck(index, checked) {
+                        checklistItems[index].checked = checked
+                        checklistView.model = null
+                        checklistView.model = checklistItems
+                    }
+
                     ListView {
                         id: checklistView
                         Layout.fillWidth: true
@@ -122,7 +129,12 @@ Page {
                             CheckBox {
                                 checked: modelData.checked
                                 onCheckedChanged: {
-                                    checklistItems[index].checked = checked
+                                    // Directly toggle and force array change
+                                    var temp = checklistItems[index]
+                                    temp.checked = checked
+                                    checklistItems[index] = temp
+                                    // Force refresh
+                                    checklistItems = checklistItems.slice()
                                 }
                             }
 
@@ -195,5 +207,13 @@ Page {
             if (checklistItems[i].checked) count++
         }
         return count
+    }
+
+    function toggleCheck(index, checked) {
+        checklistItems[index].checked = checked
+        // Force refresh of the checklist
+        var temp = checklistItems
+        checklistItems = []
+        checklistItems = temp
     }
 }

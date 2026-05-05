@@ -94,11 +94,11 @@ Page {
 
         if (invoiceId > 0) {
             appWindow.showToast("Factura emitida correctamente")
-            SaleManager.refreshSales()
-            // Refresh the list by resetting model
-            listView.model = null
-            listView.model = SaleManager.getSalesByStatus("pendiente")
-            console.log("List refreshed, pending now:", listView.model.length)
+            // Navigate away and back to force refresh
+            appWindow.goBack()
+            Qt.callLater(function() {
+                appWindow.navigateTo("modules/commercial/InvoicePage.qml")
+            })
         } else {
             appWindow.showToast("Error al emitir factura", true)
         }
