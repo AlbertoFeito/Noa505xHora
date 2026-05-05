@@ -202,6 +202,13 @@ Page {
 
         if (role === "comercial" || role === "administrador") {
             modules.push({
+                title: "Dashboard",
+                description: "Resumen comercial",
+                page: "modules/commercial/CommercialDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
+            modules.push({
                 title: "Vale de Venta",
                 description: "Recepción y emisión de vales",
                 page: "modules/commercial/SaleValePage.qml",
@@ -233,15 +240,22 @@ Page {
 
         if (role === "almacen" || role === "administrador") {
             modules.push({
-                title: "Almacén",
-                description: "Gestión integral del almacén",
+                title: "Dashboard",
+                description: "Resumen de almacén",
                 page: "modules/warehouse/WarehouseDashboardPage.qml",
-                icon: "🏭",
+                icon: "📊",
                 color: Theme.primary
             })
         }
 
         if (role === "mensajero" || role === "administrador") {
+            modules.push({
+                title: "Dashboard",
+                description: "Resumen del mensajero",
+                page: "modules/messenger/MessengerDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
             modules.push({
                 title: "Estado de Entrega",
                 description: "Gestionar entregas",
@@ -266,6 +280,13 @@ Page {
         }
 
         if (role === "custodio" || role === "administrador") {
+            modules.push({
+                title: "Dashboard",
+                description: "Resumen de custodia",
+                page: "modules/custody/CustodyDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
             modules.push({
                 title: "Recibo Custodia",
                 description: "Recibir recursos del día",

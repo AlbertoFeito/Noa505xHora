@@ -11,21 +11,34 @@ Deployment y distribucion de aplicaciones QML: empaquetado para Windows, Linux, 
 ## patterns
 
 ### Windows Deployment (Tu PC: C:\Qt6\6.9.3\mingw_64)
+
+**Flujo completo:**
+1. Compilar en IDE (Qt Creator) → build/Desktop_Qt_6_9_3_MinGW_64_bit-Release/
+2. Copiar exe del build a deploy/
+3. windeployqt (si no está desplegado)
+
 ```batch
-:: Tu configuración Qt: C:\Qt6\6.9.3\mingw_64
-:: Compilar en Release con CMake
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:/Qt6/6.9.3/mingw_64
-cmake --build . --parallel
+:: Desde build/
+:: 1. Copiar exe
+copy build\Desktop_Qt_6_9_3_MinGW_64_bit-Release\505XHORA.exe deploy\
 
-:: Desplegar dependencias (windeployqt desde Qt)
-C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir .\qml .\release\505XHORA.exe
-
-:: Incluir MinGW runtime si es necesario
-:: El compilador está en: C:\Qt6\Tools\mingw1310_64\bin
-
-:: Crear installer con Qt Installer Framework
-C:\Qt6\Tools\QtIFW\4.4.1\bin\binarycreator.exe -c config\config.xml -p packages 505XHORAInstaller.exe
+:: 2. Desplegar dependencias (solo si no existen)
+C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir .\qml .\deploy\505XHORA.exe
 ```
+
+**Estructura deploy/**:
+```
+deploy/
+├── 505XHORA.exe
+├── Qt6*.dll
+├── lib*.dll
+├── platforms/qwindows.dll
+├── qml/
+├── sqldrivers/qsqlite.dll
+└── translations/
+```
+
+**Ejecutar**: `deploy\505XHORA.exe`
 
 ### Linux Deployment (AppImage)
 ```bash
