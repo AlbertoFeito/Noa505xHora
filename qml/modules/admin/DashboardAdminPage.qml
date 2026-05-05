@@ -155,6 +155,134 @@ Page {
                 type: 2
                 onClicked: appWindow.showToast("Reporte ONAT generado")
             }
+
+            // Módulos Admin
+            Label {
+                text: "Módulos de Administrador"
+                font.pixelSize: 18
+                font.weight: Font.Medium
+                color: Theme.textPrimary
+                Layout.topMargin: Theme.spacingMd
+                Layout.leftMargin: Theme.spacingSm
+            }
+
+            GridLayout {
+                columns: Math.min(2, Math.floor(parent.width / 250))
+                columnSpacing: Theme.spacingMd
+                rowSpacing: Theme.spacingMd
+
+                // Gastos
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 100
+                    elevation: 1
+                    title: "Gastos"
+                    subtitle: "Control de gastos operativos"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: appWindow.navigateTo("modules/admin/ExpensesPage.qml")
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "💸"
+                            font.pixelSize: 28
+                            color: Theme.error
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 18
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // Nómina
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 100
+                    elevation: 1
+                    title: "Nómina"
+                    subtitle: "Gestión de salarios"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: appWindow.navigateTo("modules/admin/PayrollPage.qml")
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "👥"
+                            font.pixelSize: 28
+                            color: Theme.success
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 18
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // Configuración
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 100
+                    elevation: 1
+                    title: "Configuración"
+                    subtitle: "Ajustes del sistema"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: appWindow.navigateTo("modules/admin/ConfigPage.qml")
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "⚙️"
+                            font.pixelSize: 28
+                            color: Theme.textSecondary
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 18
+                            color: Theme.accent
+                        }
+                    }
+                }
+
+                // Usuarios
+                CustomCard {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 100
+                    elevation: 1
+                    title: "Usuarios"
+                    subtitle: "Gestión de usuarios"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: appWindow.navigateTo("modules/admin/UserManagementPage.qml")
+                    }
+
+                    content: RowLayout {
+                        Label {
+                            text: "👤"
+                            font.pixelSize: 28
+                            color: Theme.accent
+                        }
+                        Item { Layout.fillWidth: true }
+                        Label {
+                            text: "→"
+                            font.pixelSize: 18
+                            color: Theme.accent
+                        }
+                    }
+                }
+            }
         }
     }
 
