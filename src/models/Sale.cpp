@@ -142,10 +142,12 @@ int SaleManager::createSale(const QString &clientName, const QString &clientPhon
 
         if (saleQuery.lastError().type() != QSqlError::NoError) {
             qWarning() << "Failed to create sale:" << saleQuery.lastError().text();
+            qWarning() << "Last query:" << saleQuery.lastQuery();
             return false;
         }
 
         int saleId = saleQuery.lastInsertId().toInt();
+        qDebug() << "Sale created with ID:" << saleId;
 
         // Insertar items
         for (const QVariant &itemVar : items) {
@@ -189,15 +191,18 @@ int SaleManager::createSale(const QString &clientName, const QString &clientPhon
     if (success) {
         refreshSales();
         // Obtener el ID de la venta creada
-        QSqlQuery idQuery = m_dbManager->executeQuery(
+QSqlQuery idQuery = m_dbManager->executeQuery(
             "SELECT id FROM sales WHERE sale_number = :sale_number",
-            {{"sale_number", saleNumber}}
+            QVariantMap{{"sale_number", saleNumber}}
         );
         if (idQuery.next()) {
-            return idQuery.value(0).toInt();
+            int newId = idQuery.value(0).toInt();
+            qDebug() << "Returning sale ID:" << newId;
+            return newId;
         }
     }
 
+    qWarning() << "createSale failed, success:" << success;
     return -1;
 }
 
@@ -208,7 +213,7 @@ bool SaleManager::updateSaleStatus(int saleId, const QString &status)
     if (status == "liquidado") sql += ", liquidated_at = CURRENT_TIMESTAMP";
     sql += " WHERE id = :id";
 
-    QSqlQuery query = m_dbManager->executeQuery(sql, {{"status", status}, {"id", saleId}});
+    QSqlQuery query = m_dbManager->executeQuery(sql, QVariantMap{{"status", status}, {"id", saleId}});
 
     if (!query.lastError().text().isEmpty()) {
         qWarning() << "Failed to update sale status:" << query.lastError().text();

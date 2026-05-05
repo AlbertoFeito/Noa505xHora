@@ -274,29 +274,45 @@ Page {
     }
 
     function createSale() {
-        var messengerId = 0
-        if (clientAddressField.text !== "") {
-            // Venta a domicilio - requiere mensajero
-            var messengers = UserManager.getUsersByRole("mensajero")
-            if (messengers.length > 0) {
-                messengerId = messengers[0].id
-            }
+        console.log("createSale called")
+        console.log("clientName:", clientNameField.text)
+        console.log("saleItems length:", saleItems.length)
+        console.log("createdBy:", UserManager.currentUser.id)
+
+        if (!clientNameField.text || clientNameField.text.trim() === "") {
+            appWindow.showToast("Ingrese nombre del cliente", true)
+            return
         }
 
+        if (saleItems.length === 0) {
+            appWindow.showToast("Agregue al menos un producto", true)
+            return
+        }
+
+        var createdById = 0
+        if (UserManager.currentUser && UserManager.currentUser.id) {
+            createdById = UserManager.currentUser.id
+        }
+
+        console.log("Calling SaleManager.createSale with", createdById)
+
         var saleId = SaleManager.createSale(
-            clientNameField.text,
+            clientNameField.text.trim(),
             clientPhoneField.text,
             clientAddressField.text,
             saleItems,
             paymentTypeCombo.currentText,
             parseFloat(deliveryCostField.text || 0),
             parseFloat(commissionField.text || 0),
-            UserManager.currentUser.id,
+            createdById,
             notesField.text
         )
 
+        console.log("Sale created, saleId:", saleId)
+
         if (saleId > 0) {
-            appWindow.showToast("Vale creado: " + SaleManager.data(SaleManager.index(0, 0), 258))
+            var sale = SaleManager.getSale(saleId)
+            appWindow.showToast("Vale creado: " + (sale && sale.saleNumber ? sale.saleNumber : saleId))
             appWindow.goBack()
         } else {
             appWindow.showToast("Error al crear el vale", true)
