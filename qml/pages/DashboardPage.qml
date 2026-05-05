@@ -200,48 +200,53 @@ Page {
     function getModulesForRole(role) {
         var modules = []
 
-        // Dashboard principal muestra SOLO el dashboard del rol actual
-        // Los módulos individuales están dentro de cada dashboard
+        // Administrador ve TODOS los dashboards
+        // Otros roles ven solo su dashboard
 
         if (role === "administrador") {
-            // Admin ve Dashboard Admin con todos los módulos
+            // Dashboard Admin
             modules.push({
-                title: "Dashboard Admin",
-                description: "Métricas y reportes",
+                title: "Admin",
+                description: "Gastos, Nómina, Config, Usuarios",
                 page: "modules/admin/DashboardAdminPage.qml",
                 icon: "📈",
                 color: Theme.primary
             })
+            // Comercial
             modules.push({
-                title: "Gastos",
-                description: "Control de gastos",
-                page: "modules/admin/ExpensesPage.qml",
-                icon: "💸",
-                color: Theme.error
-            })
-            modules.push({
-                title: "Nómina",
-                description: "Gestión de salarios",
-                page: "modules/admin/PayrollPage.qml",
-                icon: "👥",
+                title: "Comercial",
+                description: "Ventas, Facturación, Liquidación",
+                page: "modules/commercial/CommercialDashboardPage.qml",
+                icon: "💰",
                 color: Theme.success
             })
+            // Almacén
             modules.push({
-                title: "Configuración",
-                description: "Ajustes del sistema",
-                page: "modules/admin/ConfigPage.qml",
-                icon: "⚙️",
-                color: Theme.textSecondary
+                title: "Almacén",
+                description: "Productos, Entradas, Stock",
+                page: "modules/warehouse/WarehouseDashboardPage.qml",
+                icon: "🏭",
+                color: Theme.warning
             })
+            // Mensajero
             modules.push({
-                title: "Usuarios",
-                description: "Gestión de usuarios",
-                page: "modules/admin/UserManagementPage.qml",
-                icon: "👤",
+                title: "Mensajero",
+                description: "Entregas, Cobros, Incidentes",
+                page: "modules/messenger/MessengerDashboardPage.qml",
+                icon: "🚚",
+                color: Theme.info
+            })
+            // Custodio
+            modules.push({
+                title: "Custodio",
+                description: "Custodia, Historial",
+                page: "modules/custody/CustodyDashboardPage.qml",
+                icon: "🔐",
                 color: Theme.accent
             })
         }
 
+        // Roles específicos ven su dashboard
         if (role === "comercial") {
             modules.push({
                 title: "Dashboard",
@@ -283,7 +288,5 @@ Page {
         }
 
         return modules
-    }
-}
     }
 }
