@@ -11,6 +11,7 @@
         <file>pages/DashboardPage.qml</file>
         <file>pages/ProfilePage.qml</file>
         <file>modules/commercial/SaleValePage.qml</file>
+        <file>modules/commercial/CommercialDashboardPage.qml</file>
         <file>modules/commercial/InvoicePage.qml</file>
         <file>modules/commercial/LiquidationPage.qml</file>
         <file>modules/commercial/CommissionPage.qml</file>
@@ -27,9 +28,11 @@
         <file>modules/warehouse/ProductExitPage.qml</file>
         <file>modules/warehouse/InventoryHistoryPage.qml</file>
         <file>modules/messenger/DeliveryStatusPage.qml</file>
+        <file>modules/messenger/MessengerDashboardPage.qml</file>
         <file>modules/messenger/CollectionPage.qml</file>
         <file>modules/messenger/IncidentReportPage.qml</file>
         <file>modules/custody/CustodyReceiptPage.qml</file>
+        <file>modules/custody/CustodyDashboardPage.qml</file>
         <file>modules/custody/CustodyHistoryPage.qml</file>
         <file>modules/admin/DashboardAdminPage.qml</file>
         <file>modules/admin/ExpensesPage.qml</file>
