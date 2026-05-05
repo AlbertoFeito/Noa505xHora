@@ -172,6 +172,10 @@ Page {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
+                                if (getCheckedCount() < checklistItems.length) {
+                                    appWindow.showToast("Debe completar todos los puntos del checklist", true)
+                                    return
+                                }
                                 console.log("QC approved for sale:", selectedSale.saleNumber)
                                 // Update status to "preparado"
                                 SaleManager.updateSaleStatus(selectedSale.id, "preparado")
@@ -191,11 +195,32 @@ Page {
                 title: "Historial de Controles"
                 subtitle: "Verificaciones realizadas"
 
-                content: Label {
-                    text: "No hay registros de control de calidad aún"
-                    font.pixelSize: 12
-                    color: Theme.textSecondary
-                    wrapMode: Text.WordWrap
+                Component.onCompleted: {
+                    console.log("QC page loaded")
+                }
+
+                content: ListView {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 150
+                    model: SaleManager.getSalesByStatus("preparado")
+                    clip: true
+
+                    delegate: ItemDelegate {
+                        width: ListView.view.width
+                        contentItem: RowLayout {
+                            Label {
+                                text: "✅ " + modelData.saleNumber + " - " + (modelData.clientName || "Sin cliente")
+                                font.pixelSize: 12
+                                color: Theme.success
+                                Layout.fillWidth: true
+                            }
+                            Label {
+                                text: modelData.total.toFixed(2) + " CUP"
+                                font.pixelSize: 11
+                                color: Theme.textSecondary
+                            }
+                        }
+                    }
                 }
             }
         }
