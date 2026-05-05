@@ -241,22 +241,18 @@ Component.prototype.createOperations = function() {
 
 ## Deployment del Proyecto 505XHORA
 
-### Build y Deploy en Windows
+### Build y Deploy en Windows (MÉTODO VERIFICADO 505XHORA)
 ```batch
-:: 1. Configurar CMake con Qt
-cmake -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:/Qt6/6.9.3/mingw_64
+:: El build del IDE ya está en: build/Desktop_Qt_6_9_3_MinGW_64_bit-Release
 
-:: 2. Compilar
-cmake --build build --parallel
+:: 1. Compilar (usa el build del IDE)
+cmake --build build/Desktop_Qt_6_9_3_MinGW_64_bit-Release --parallel
 
-:: 3. Crear carpeta deploy
-mkdir build\deploy
+:: 2. Copiar exe a deploy
+Copy-Item build\Desktop_Qt_6_9_3_MinGW_64_bit-Release\505XHORA.exe deploy\
 
-:: 4. Copiar exe
-copy build\505XHORA.exe build\deploy\
-
-:: 5. Ejecutar windeployqt (copia todas las dependencias)
-C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir D:\2026\505XHORA\qml D:\2026\505XHORA\build\deploy\505XHORA.exe
+:: 3. Deployment (solo una vez o si borraste deploy)
+C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir D:\2026\505XHORA\qml D:\2026\505XHORA\deploy\505XHORA.exe
 ```
 
 ### Resultado del Deploy
@@ -295,17 +291,47 @@ C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir D:\2026\505XHORA\qm
 | **Android Platforms** | `android-31, 34, 35, 36` |
 | **Qt Android** | `C:\Qt6\6.9.3\android_arm64_v8a` |
 
-### Compilación rápida en tu PC
+### Compilación y Deployment (MÉTODO VERIFICADO 505XHORA)
+
+El Qt Creator ya crea la carpeta `build/Desktop_Qt_6_9_3_MinGW_64_bit-Release` o `-Debug`.
+
 ```batch
-:: Build Debug
-cmake .. -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:/Qt6/6.9.3/mingw_64
-cmake --build . --parallel
+:: 1. Compilar en el build del IDE (Release o Debug según corresponda)
+cmake --build build/Desktop_Qt_6_9_3_MinGW_64_bit-Release --parallel
 
-:: Build Release
-cmake .. -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:/Qt6/6.9.3/mingw_64 -DCMAKE_BUILD_TYPE=Release
-cmake --build . --parallel
+:: 2. Copiar exe a deploy
+Copy-Item build\Desktop_Qt_6_9_3_MinGW_64_bit-Release\505XHORA.exe deploy\
 
-:: Deploy (tu proyecto ya tiene build en build/Desktop_Qt_6_9_3_MinGW_64_bit-Debug)
+:: 3. Ejecutar windeployqt (copia todas las dependencias Qt a deploy)
+C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir D:\2026\505XHORA\qml D:\2026\505XHORA\deploy\505XHORA.exe
+
+:: 4. Ejecutar desde deploy
+Start-Process -FilePath "D:\2026\505XHORA\deploy\505XHORA.exe"
+```
+
+### Cómo actualizar solo el exe (sin regenerar todo el deployment)
+```batch
+:: Si solo cambiaste código y ya tienes el deploy con todas las dependencias:
+cmake --build build/Desktop_Qt_6_9_3_MinGW_64_bit-Release --parallel
+Copy-Item build\Desktop_Qt_6_9_3_MinGW_64_bit-Release\505XHORA.exe deploy\
+Start-Process -FilePath "D:\2026\505XHORA\deploy\505XHORA.exe"
+```
+
+### Nueva compilación desde cero (si borraste todo)
+```batch
+:: 1. Configurar CMake con compiladores MinGW
+cmake -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:/Qt6/6.9.3/mingw_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=C:/Qt6/Tools/mingw1310_64/bin/c++.exe -DCMAKE_MAKE_PROGRAM=C:/Qt6/Tools/mingw1310_64/bin/mingw32-make.exe
+
+:: 2. Compilar
+cmake --build build/Desktop_Qt_6_9_3_MinGW_64_bit-Release --parallel
+
+:: 3. Deployment (solo una vez)
+New-Item -ItemType Directory -Force -Path deploy
+Copy-Item build\Desktop_Qt_6_9_3_MinGW_64_bit-Release\505XHORA.exe deploy\
+C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir D:\2026\505XHORA\qml D:\2026\505XHORA\deploy\505XHORA.exe
+
+:: 4. Ejecutar
+Start-Process -FilePath "D:\2026\505XHORA\deploy\505XHORA.exe"
 ```
 
 ## references

@@ -19,7 +19,6 @@ ApplicationWindow {
     Material.theme: Material.Light
     Material.primary: Material.BlueGrey
     Material.accent: Material.Teal
-    Material.foreground: "#212121"
 
     // Estado de la app
     property bool isLoggedIn: UserManager.isLoggedIn

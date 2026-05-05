@@ -35,9 +35,10 @@ Page {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.minimumHeight: 80
-                        radius: Theme.radiusSm
-                        color: Theme.primary
-                        opacity: 0.2
+                        radius: Theme.radiusMd
+                        color: "#BBDEFB"
+                        border.color: "#1565C0"
+                        border.width: 2
 
                         ColumnLayout {
                             anchors.fill: parent
@@ -45,9 +46,9 @@ Page {
 
                             Label {
                                 text: "Total Productos"
-                                font.pixelSize: 12
+                                font.pixelSize: 13
                                 font.weight: Font.Medium
-                                color: Theme.primary
+                                color: "#0D47A1"
                                 Layout.alignment: Qt.AlignLeft
                             }
 
@@ -55,15 +56,15 @@ Page {
                                 text: ProductManager.rowCount()
                                 font.pixelSize: 28
                                 font.weight: Font.Bold
-                                color: Theme.primary
+                                color: "#0D47A1"
                                 Layout.alignment: Qt.AlignLeft
                             }
 
                             Label {
                                 text: "ítems"
                                 font.pixelSize: 11
-                                color: Theme.primary
-                                opacity: 0.7
+                                color: "#0D47A1"
+                                opacity: 0.8
                                 Layout.alignment: Qt.AlignLeft
                             }
                         }
@@ -73,9 +74,10 @@ Page {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.minimumHeight: 80
-                        radius: Theme.radiusSm
-                        color: Theme.error
-                        opacity: 0.2
+                        radius: Theme.radiusMd
+                        color: "#FFCDD2"
+                        border.color: "#C62828"
+                        border.width: 2
 
                         ColumnLayout {
                             anchors.fill: parent
@@ -83,9 +85,9 @@ Page {
 
                             Label {
                                 text: "Stock Bajo"
-                                font.pixelSize: 12
+                                font.pixelSize: 13
                                 font.weight: Font.Medium
-                                color: Theme.error
+                                color: "#B71C1C"
                                 Layout.alignment: Qt.AlignLeft
                             }
 
@@ -93,15 +95,15 @@ Page {
                                 text: ProductManager.lowStockCount
                                 font.pixelSize: 28
                                 font.weight: Font.Bold
-                                color: Theme.error
+                                color: "#B71C1C"
                                 Layout.alignment: Qt.AlignLeft
                             }
 
                             Label {
                                 text: "alertas"
                                 font.pixelSize: 11
-                                color: Theme.error
-                                opacity: 0.7
+                                color: "#B71C1C"
+                                opacity: 0.8
                                 Layout.alignment: Qt.AlignLeft
                             }
                         }
@@ -111,9 +113,10 @@ Page {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.minimumHeight: 80
-                        radius: Theme.radiusSm
-                        color: Theme.info
-                        opacity: 0.2
+                        radius: Theme.radiusMd
+                        color: "#E1BEE7"
+                        border.color: "#7B1FA2"
+                        border.width: 2
 
                         ColumnLayout {
                             anchors.fill: parent
@@ -121,9 +124,9 @@ Page {
 
                             Label {
                                 text: "Categorías"
-                                font.pixelSize: 12
+                                font.pixelSize: 13
                                 font.weight: Font.Medium
-                                color: Theme.info
+                                color: "#6A1B9A"
                                 Layout.alignment: Qt.AlignLeft
                             }
 
@@ -131,15 +134,15 @@ Page {
                                 text: ProductManager.getCategories().length - 1
                                 font.pixelSize: 28
                                 font.weight: Font.Bold
-                                color: Theme.info
+                                color: "#6A1B9A"
                                 Layout.alignment: Qt.AlignLeft
                             }
 
                             Label {
                                 text: "tipos"
                                 font.pixelSize: 11
-                                color: Theme.info
-                                opacity: 0.7
+                                color: "#6A1B9A"
+                                opacity: 0.8
                                 Layout.alignment: Qt.AlignLeft
                             }
                         }

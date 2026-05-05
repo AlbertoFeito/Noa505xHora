@@ -161,6 +161,7 @@ QVariantList ProductManager::getLowStockProducts() const
         if (p.stock <= p.minStock && p.isActive) {
             QVariantMap map;
             map["id"] = p.id;
+            map["code"] = p.code;
             map["name"] = p.name;
             map["stock"] = p.stock;
             map["minStock"] = p.minStock;

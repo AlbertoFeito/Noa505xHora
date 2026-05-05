@@ -217,3 +217,38 @@ Text {
 - [Fluid](https://github.com/lirios/fluid)
 - [Material Design Guidelines](https://material.io/design)
 - [Qt Quick Controls Styling](https://doc.qt.io/qt-6/qtquickcontrols2-customize.html)
+
+---
+
+## Dark Mode en 505XHORA (implementado)
+
+### Theme.qml con dark mode
+```qml
+pragma Singleton
+
+QtObject {
+    property bool darkMode: false
+
+    // Colores dinámicos
+    property color background: darkMode ? "#121212" : "#F5F5F5"
+    property color surface: darkMode ? "#1E1E1E" : "#FFFFFF"
+    property color textPrimary: darkMode ? "#FFFFFF" : "#000000"
+    property color textSecondary: darkMode ? "#B0B0B0" : "#424242"
+
+    // Toggle en cualquier página
+    Button {
+        text: Theme.darkMode ? "☀️" : "🌙"
+        onClicked: Theme.darkMode = !Theme.darkMode
+    }
+}
+```
+
+### Sincronizar con Material theme (main.qml)
+```qml
+ApplicationWindow {
+    property bool isDarkMode: Theme.darkMode
+    onIsDarkModeChanged: {
+        Material.theme = isDarkMode ? Material.Dark : Material.Light
+    }
+}
+```

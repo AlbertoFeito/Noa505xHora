@@ -3,22 +3,24 @@ import QtQuick
 pragma Singleton
 
 QtObject {
-    // Colores corporativos 505 X HORA
-    property color primary: "#37474F"         // BlueGrey 800
-    property color primaryLight: "#546E7A"    // BlueGrey 600
-    property color primaryDark: "#263238"       // BlueGrey 900
-    property color accent: "#009688"          // Teal 500
-    property color accentLight: "#4DB6AC"     // Teal 300
-    property color accentDark: "#00796B"      // Teal 700
+    // Colores Material Design 505 X HORA
+    property color primary: "#3F51B5"        // Indigo 500
+    property color primaryLight: "#7986CB"   // Indigo 300
+    property color primaryDark: "#303F9F"    // Indigo 700
+    property color accent: "#E91E63"          // Pink 500 (acento)
+    property color accentLight: "#F06292"    // Pink 300
+    property color accentDark: "#C2185B"    // Pink 700
 
-    property color background: "#FAFAFA"
-    property color surface: "#FFFFFF"
-    property color surfaceVariant: "#F5F5F5"
-    property color divider: "#E0E0E0"
-    property color textPrimary: "#212121"
-    property color textSecondary: "#757575"
-    property color textDisabled: "#BDBDBD"
+    // Colores base
+    property color background: "#FAFAFA"      // Gris muy claro
+    property color surface: "#FFFFFF"        // Blanco
+    property color surfaceVariant: "#F5F5F5" // Gris claro
+    property color divider: "#BDBDBD"        // Gris medio
+    property color textPrimary: "#212121"     // Negro
+    property color textSecondary: "#757575"  // Gris oscuro
+    property color textDisabled: "#9E9E9E"  // Gris
 
+    // Estados
     property color success: "#4CAF50"
     property color warning: "#FF9800"
     property color error: "#F44336"
@@ -60,4 +62,9 @@ QtObject {
     property string shadowSm: "#1A000000"
     property string shadowMd: "#33000000"
     property string shadowLg: "#66000000"
+
+    // Alias
+    property color colorPrimary: primary
+    property color colorPrimaryDark: primaryDark
+    property color colorAccent: accent
 }

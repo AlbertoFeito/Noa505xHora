@@ -13,6 +13,18 @@ Page {
         showBack: true
     }
 
+    onVisibleChanged: {
+        if (visible) {
+            refreshAlerts()
+        }
+    }
+
+    function refreshAlerts() {
+        lowStockModel = ProductManager.getLowStockProducts()
+    }
+
+    property var lowStockModel: ProductManager.getLowStockProducts()
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Theme.spacingMd
@@ -23,26 +35,86 @@ Page {
             title: "Productos Bajo Stock Mínimo"
             subtitle: ProductManager.lowStockCount + " alertas"
 
-            content: ListView {
+            content: ColumnLayout {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                model: ProductManager.getLowStockProducts()
-                clip: true
+                Layout.minimumHeight: 200
 
-                delegate: ItemDelegate {
-                    width: ListView.view.width
-                    contentItem: RowLayout {
+                // Estado vacío
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 100
+                    visible: lowStockModel.length === 0
+
+                    ColumnLayout {
+                        anchors.centerIn: parent
+                        spacing: Theme.spacingSm
+
                         Label {
-                            text: modelData.name
-                            font.pixelSize: 14
-                            color: Theme.textPrimary
-                            Layout.fillWidth: true
+                            text: "✅"
+                            font.pixelSize: 40
+                            anchors.horizontalCenter: parent
                         }
                         Label {
-                            text: modelData.stock + " / " + modelData.minStock + " mín."
-                            font.pixelSize: 13
-                            font.weight: Font.Medium
-                            color: Theme.error
+                            text: "No hay productos bajo stock mínimo"
+                            font.pixelSize: 14
+                            color: Theme.textSecondary
+                            anchors.horizontalCenter: parent
+                        }
+                    }
+                }
+
+                // Lista de productos
+                ListView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    model: lowStockModel
+                    clip: true
+                    visible: lowStockModel.length > 0
+
+                    delegate: ItemDelegate {
+                        width: ListView.view.width
+                        contentItem: RowLayout {
+                            spacing: Theme.spacingSm
+
+                            Rectangle {
+                                width: 4
+                                height: 40
+                                radius: 2
+                                color: Theme.error
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 2
+
+                                Label {
+                                    text: modelData.name
+                                    font.pixelSize: 14
+                                    font.weight: Font.Medium
+                                    color: Theme.textPrimary
+                                }
+                                Label {
+                                    text: "Código: " + (modelData.code || "N/A")
+                                    font.pixelSize: 11
+                                    color: Theme.textSecondary
+                                }
+                            }
+
+                            ColumnLayout {
+                                horizontalAlignment: Text.AlignRight
+
+                                Label {
+                                    text: modelData.stock
+                                    font.pixelSize: 16
+                                    font.weight: Font.Bold
+                                    color: Theme.error
+                                }
+                                Label {
+                                    text: "mín: " + modelData.minStock
+                                    font.pixelSize: 10
+                                    color: Theme.textSecondary
+                                }
+                            }
                         }
                     }
                 }

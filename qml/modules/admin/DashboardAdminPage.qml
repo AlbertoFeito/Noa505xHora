@@ -33,20 +33,21 @@ Page {
 
                     Repeater {
                         model: [
-                            { label: "Ventas Hoy", value: SaleManager.todaySalesCount.toString(), desc: "transacciones", color: Theme.accent },
-                            { label: "Total Hoy", value: SaleManager.todaySalesTotal.toFixed(2), desc: "CUP", color: Theme.success },
-                            { label: "Gastos Mes", value: ExpenseManager.monthExpenses.toFixed(2), desc: "CUP", color: Theme.error },
-                            { label: "Productos", value: ProductManager.rowCount().toString(), desc: "ítems", color: Theme.info },
-                            { label: "Stock Bajo", value: ProductManager.lowStockCount.toString(), desc: "alertas", color: Theme.warning },
-                            { label: "Nómina Pend.", value: PayrollManager.totalPayroll.toFixed(2), desc: "CUP", color: Theme.primary }
+                            { label: "Ventas Hoy", value: SaleManager.todaySalesCount.toString(), desc: "transacciones", color: "#009688", bg: "#B2DFDB" },
+                            { label: "Total Hoy", value: SaleManager.todaySalesTotal.toFixed(2), desc: "CUP", color: "#2E7D32", bg: "#C8E6C9" },
+                            { label: "Gastos Mes", value: ExpenseManager.monthExpenses.toFixed(2), desc: "CUP", color: "#C62828", bg: "#FFCDD2" },
+                            { label: "Productos", value: ProductManager.rowCount().toString(), desc: "ítems", color: "#1565C0", bg: "#BBDEFB" },
+                            { label: "Stock Bajo", value: ProductManager.lowStockCount.toString(), desc: "alertas", color: "#F57C00", bg: "#FFE0B2" },
+                            { label: "Nómina Pend.", value: PayrollManager.totalPayroll.toFixed(2), desc: "CUP", color: "#37474F", bg: "#CFD8DC" }
                         ]
 
                         delegate: Rectangle {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 100
-                            radius: Theme.radiusSm
-                            color: modelData.color
-                            opacity: 0.08
+                            radius: Theme.radiusMd
+                            color: modelData.bg
+                            border.color: modelData.color
+                            border.width: 2
 
                             ColumnLayout {
                                 anchors.fill: parent
@@ -54,7 +55,8 @@ Page {
 
                                 Label {
                                     text: modelData.label
-                                    font.pixelSize: 12
+                                    font.pixelSize: 13
+                                    font.weight: Font.Medium
                                     color: modelData.color
                                     Layout.alignment: Qt.AlignLeft
                                 }
@@ -63,14 +65,15 @@ Page {
                                     text: modelData.value
                                     font.pixelSize: 28
                                     font.weight: Font.Bold
-                                    color: Theme.textPrimary
+                                    color: modelData.color
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
                                 Label {
                                     text: modelData.desc
                                     font.pixelSize: 11
-                                    color: Theme.textSecondary
+                                    color: modelData.color
+                                    opacity: 0.8
                                     Layout.alignment: Qt.AlignLeft
                                 }
                             }

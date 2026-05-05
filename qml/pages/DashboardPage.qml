@@ -54,18 +54,19 @@ Page {
 
                     Repeater {
                         model: [
-                            { label: "Ventas Hoy", value: SaleManager.todaySalesCount, unit: "ventas", color: Theme.accent },
-                            { label: "Total Ventas", value: SaleManager.todaySalesTotal.toFixed(2), unit: "CUP", color: Theme.success },
-                            { label: "Gastos Hoy", value: ExpenseManager.todayExpenses.toFixed(2), unit: "CUP", color: Theme.error },
-                            { label: "Productos", value: ProductManager.rowCount(), unit: "ítems", color: Theme.info }
+                            { label: "Ventas Hoy", value: SaleManager.todaySalesCount, unit: "ventas", color: "#009688", bg: "#B2DFDB" },
+                            { label: "Total Ventas", value: SaleManager.todaySalesTotal.toFixed(2), unit: "CUP", color: "#2E7D32", bg: "#C8E6C9" },
+                            { label: "Gastos Hoy", value: ExpenseManager.todayExpenses.toFixed(2), unit: "CUP", color: "#C62828", bg: "#FFCDD2" },
+                            { label: "Productos", value: ProductManager.rowCount(), unit: "ítems", color: "#1565C0", bg: "#BBDEFB" }
                         ]
 
                         delegate: Rectangle {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 80
-                            radius: Theme.radiusSm
-                            color: modelData.color
-                            opacity: 0.1
+                            radius: Theme.radiusMd
+                            color: modelData.bg
+                            border.color: modelData.color
+                            border.width: 2
 
                             ColumnLayout {
                                 anchors.fill: parent
@@ -73,23 +74,25 @@ Page {
 
                                 Label {
                                     text: modelData.label
-                                    font.pixelSize: 12
+                                    font.pixelSize: 13
+                                    font.weight: Font.Medium
                                     color: modelData.color
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
                                 Label {
                                     text: modelData.value
-                                    font.pixelSize: 24
+                                    font.pixelSize: 26
                                     font.weight: Font.Bold
-                                    color: Theme.textPrimary
+                                    color: modelData.color
                                     Layout.alignment: Qt.AlignLeft
                                 }
 
                                 Label {
                                     text: modelData.unit
                                     font.pixelSize: 11
-                                    color: Theme.textSecondary
+                                    color: modelData.color
+                                    opacity: 0.8
                                     Layout.alignment: Qt.AlignLeft
                                 }
                             }
