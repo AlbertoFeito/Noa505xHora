@@ -52,13 +52,13 @@ Page {
                         Label {
                             text: "✅"
                             font.pixelSize: 40
-                            anchors.horizontalCenter: parent
+                            Layout.alignment: Qt.AlignHCenter
                         }
                         Label {
                             text: "No hay productos bajo stock mínimo"
                             font.pixelSize: 14
                             color: Theme.textSecondary
-                            anchors.horizontalCenter: parent
+                            Layout.alignment: Qt.AlignHCenter
                         }
                     }
                 }
@@ -100,19 +100,30 @@ Page {
                                 }
                             }
 
-                            ColumnLayout {
-                                horizontalAlignment: Text.AlignRight
+                            Rectangle {
+                                Layout.fillWidth: true
+                                height: 50
+                                radius: Theme.radiusSm
+                                color: "#FFEBEE"
+                                border.color: Theme.error
+                                border.width: 1
 
-                                Label {
-                                    text: modelData.stock
-                                    font.pixelSize: 16
-                                    font.weight: Font.Bold
-                                    color: Theme.error
-                                }
-                                Label {
-                                    text: "mín: " + modelData.minStock
-                                    font.pixelSize: 10
-                                    color: Theme.textSecondary
+                                ColumnLayout {
+                                    anchors.centerIn: parent
+
+                                    RowLayout {
+                                        Label {
+                                            text: "Stock: "
+                                            font.pixelSize: 10
+                                            color: Theme.error
+                                        }
+                                        Label {
+                                            text: modelData.stock + " / " + modelData.minStock + " mín"
+                                            font.pixelSize: 14
+                                            font.weight: Font.Bold
+                                            color: Theme.error
+                                        }
+                                    }
                                 }
                             }
                         }
