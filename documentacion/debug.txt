@@ -1,10 +1,5 @@
-qml: DEBUG: Button clicked! clientName:Alberto items:2
-qml: DEBUG: enabled check - name empty: false
-qml: createSale called
-qml: clientName: Alberto
-qml: saleItems length: 2
-qml: createdBy: 1
-qml: Calling SaleManager.createSale with 1
-Sale created with ID: 1
-Returning sale ID: 1
-qml: Sale created, saleId: 1
+qml: InvoicePage loaded, pending sales: 1
+qml: Facturar sale ID: 1
+qml: createInvoice called with saleId: 1
+qml: Sale data: [object Object]
+qml: Invoice created, invoiceId: 1

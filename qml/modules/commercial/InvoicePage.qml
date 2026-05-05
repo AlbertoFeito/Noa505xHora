@@ -27,6 +27,7 @@ Page {
             }
 
             content: ListView {
+                id: listView
                 Layout.fillWidth: true
                 Layout.preferredHeight: 300
                 model: SaleManager.getSalesByStatus("pendiente")
@@ -94,6 +95,10 @@ Page {
         if (invoiceId > 0) {
             appWindow.showToast("Factura emitida correctamente")
             SaleManager.refreshSales()
+            // Refresh the list by resetting model
+            listView.model = null
+            listView.model = SaleManager.getSalesByStatus("pendiente")
+            console.log("List refreshed, pending now:", listView.model.length)
         } else {
             appWindow.showToast("Error al emitir factura", true)
         }

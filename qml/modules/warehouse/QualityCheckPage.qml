@@ -35,18 +35,23 @@ Page {
             CustomCard {
                 Layout.fillWidth: true
                 title: "Seleccionar Venta para Verificar"
-                subtitle: "Ventas en estado 'preparado'"
+                subtitle: "Ventas en estado 'facturado'"
+
+                Component.onCompleted: {
+                    console.log("QualityCheck: loaded, facturado sales:", SaleManager.getSalesByStatus("facturado").length)
+                }
 
                 content: ListView {
                     Layout.fillWidth: true
                     height: 150
-                    model: SaleManager.getSalesByStatus("preparado")
+                    model: SaleManager.getSalesByStatus("facturado")
                     clip: true
 
                     delegate: ItemDelegate {
                         width: ListView.view.width
                         onClicked: {
                             selectedSale = modelData
+                            console.log("Selected sale:", modelData.saleNumber)
                             // Reset checklist
                             for (var i = 0; i < checklistItems.length; i++) {
                                 checklistItems[i].checked = false
