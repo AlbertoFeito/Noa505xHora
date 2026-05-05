@@ -200,110 +200,11 @@ Page {
     function getModulesForRole(role) {
         var modules = []
 
-        if (role === "comercial" || role === "administrador") {
-            modules.push({
-                title: "Dashboard",
-                description: "Resumen comercial",
-                page: "modules/commercial/CommercialDashboardPage.qml",
-                icon: "📊",
-                color: Theme.primary
-            })
-            modules.push({
-                title: "Vale de Venta",
-                description: "Recepción y emisión de vales",
-                page: "modules/commercial/SaleValePage.qml",
-                icon: "📋",
-                color: Theme.accent
-            })
-            modules.push({
-                title: "Facturación",
-                description: "Generar facturas de compra",
-                page: "modules/commercial/InvoicePage.qml",
-                icon: "🧾",
-                color: Theme.info
-            })
-            modules.push({
-                title: "Liquidación",
-                description: "Liquidar cobros de mensajeros",
-                page: "modules/commercial/LiquidationPage.qml",
-                icon: "💰",
-                color: Theme.success
-            })
-            modules.push({
-                title: "Comisiones",
-                description: "Gestión de comisiones",
-                page: "modules/commercial/CommissionPage.qml",
-                icon: "📊",
-                color: Theme.warning
-            })
-        }
-
-        if (role === "almacen" || role === "administrador") {
-            modules.push({
-                title: "Dashboard",
-                description: "Resumen de almacén",
-                page: "modules/warehouse/WarehouseDashboardPage.qml",
-                icon: "📊",
-                color: Theme.primary
-            })
-        }
-
-        if (role === "mensajero" || role === "administrador") {
-            modules.push({
-                title: "Dashboard",
-                description: "Resumen del mensajero",
-                page: "modules/messenger/MessengerDashboardPage.qml",
-                icon: "📊",
-                color: Theme.primary
-            })
-            modules.push({
-                title: "Estado de Entrega",
-                description: "Gestionar entregas",
-                page: "modules/messenger/DeliveryStatusPage.qml",
-                icon: "🚚",
-                color: Theme.accent
-            })
-            modules.push({
-                title: "Cobros",
-                description: "Registrar pagos",
-                page: "modules/messenger/CollectionPage.qml",
-                icon: "💵",
-                color: Theme.success
-            })
-            modules.push({
-                title: "Incidentes",
-                description: "Reportar problemas",
-                page: "modules/messenger/IncidentReportPage.qml",
-                icon: "🚨",
-                color: Theme.error
-            })
-        }
-
-        if (role === "custodio" || role === "administrador") {
-            modules.push({
-                title: "Dashboard",
-                description: "Resumen de custodia",
-                page: "modules/custody/CustodyDashboardPage.qml",
-                icon: "📊",
-                color: Theme.primary
-            })
-            modules.push({
-                title: "Recibo Custodia",
-                description: "Recibir recursos del día",
-                page: "modules/custody/CustodyReceiptPage.qml",
-                icon: "🔐",
-                color: Theme.primary
-            })
-            modules.push({
-                title: "Historial Custodia",
-                description: "Ver entregas anteriores",
-                page: "modules/custody/CustodyHistoryPage.qml",
-                icon: "📜",
-                color: Theme.info
-            })
-        }
+        // Dashboard principal muestra SOLO el dashboard del rol actual
+        // Los módulos individuales están dentro de cada dashboard
 
         if (role === "administrador") {
+            // Admin ve Dashboard Admin con todos los módulos
             modules.push({
                 title: "Dashboard Admin",
                 description: "Métricas y reportes",
@@ -341,6 +242,48 @@ Page {
             })
         }
 
+        if (role === "comercial") {
+            modules.push({
+                title: "Dashboard",
+                description: "Resumen comercial",
+                page: "modules/commercial/CommercialDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
+        }
+
+        if (role === "almacen") {
+            modules.push({
+                title: "Dashboard",
+                description: "Resumen de almacén",
+                page: "modules/warehouse/WarehouseDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
+        }
+
+        if (role === "mensajero") {
+            modules.push({
+                title: "Dashboard",
+                description: "Resumen del mensajero",
+                page: "modules/messenger/MessengerDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
+        }
+
+        if (role === "custodio") {
+            modules.push({
+                title: "Dashboard",
+                description: "Resumen de custodia",
+                page: "modules/custody/CustodyDashboardPage.qml",
+                icon: "📊",
+                color: Theme.primary
+            })
+        }
+
         return modules
+    }
+}
     }
 }

@@ -40,6 +40,14 @@ deploy/
 
 **Ejecutar**: `deploy\505XHORA.exe`
 
+## Tips para evitar errores
+
+- **Sempre verifica con Context7** antes de escribir código QML: `context7_query-docs()`
+- Revisa la documentación oficial: https://doc.qt.io/qt-6/
+- Evita texto con comas al final de strings
+- Usa `TextMetrics` para texto largo que necesita elipsis
+- Testea en build Debug antes de Release
+
 ### Linux Deployment (AppImage)
 ```bash
 # Compilar
