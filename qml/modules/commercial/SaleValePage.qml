@@ -227,8 +227,15 @@ Page {
                 Layout.fillWidth: true
                 text: "Crear Vale de Venta"
                 type: 2
-                enabled: clientNameField.text !== "" && saleItems.length > 0
-                onClicked: createSale()
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("DEBUG: Button clicked! clientName:" + clientNameField.text + " items:" + saleItems.length)
+                        console.log("DEBUG: enabled check - name empty:", clientNameField.text === "")
+                        createSale()
+                    }
+                }
             }
         }
     }
