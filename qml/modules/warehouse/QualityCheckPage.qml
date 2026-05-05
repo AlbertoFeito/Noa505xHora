@@ -180,8 +180,14 @@ Page {
                                 // Update status to "preparado"
                                 SaleManager.updateSaleStatus(selectedSale.id, "preparado")
                                 appWindow.showToast("Control aprobado - Venta #" + selectedSale.saleNumber + " preparada")
+                                var saleNum = selectedSale.saleNumber
                                 selectedSale = null
                                 SaleManager.refreshSales()
+                                // Force refresh by navigating away and back
+                                appWindow.goBack()
+                                Qt.callLater(function() {
+                                    appWindow.navigateTo("modules/warehouse/QualityCheckPage.qml")
+                                })
                             }
                         }
                     }
