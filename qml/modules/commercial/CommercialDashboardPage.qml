@@ -139,7 +139,7 @@ Page {
                             }
 
                             Label {
-                                text: "CUP por cobr",
+                                text: "CUP por cobrar"
                                 font.pixelSize: 11
                                 color: "#E65100"
                                 opacity: 0.8
