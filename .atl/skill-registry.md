@@ -147,9 +147,12 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 
 ### qt-qml-deployment
 - Windows: `windeployqt.exe --release --qmldir .\qml .\release\app.exe`
-- Incluir MinGW runtime desde `C:\Qt6\Tools\mingw1310_64\bin`
-- Qt Installer Framework para installers
-- WebAssembly: Qt for WebAssembly target
+- Build: `cmake --build build/Desktop_Qt_6_9_3_MinGW_64_bit-Release --parallel`
+- Deploy: `C:\Qt6\6.9.3\mingw_64\bin\windeployqt.exe --release --qmldir D:\2026\505XHORA\qml D:\2026\505XHORA\deploy\505XHORA.exe`
+- Ejecutar: `Start-Process -FilePath "D:\2026\505XHORA\deploy\505XHORA.exe"`
+- Android SDK: `D:\instaladores\android\androidqt6.9`
+- emsdk: `D:\instaladores\emsdk`
+- WebAssembly: `C:\Qt6\6.9.3\wasm_singlethread`
 
 ### qt-qml-testing-debugging
 - Qt Test: `import QtTest`, `TestCase {}`

@@ -123,7 +123,7 @@ Page {
                         Rectangle {
                             Layout.fillWidth: true
                             radius: Theme.radiusSm
-                            color: Theme.backgroundAlt
+                            color: Theme.background
 
                             ColumnLayout {
                                 anchors.margins: Theme.spacingSm
